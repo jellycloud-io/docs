@@ -2,17 +2,9 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
-// Set DEPLOY_ENV=dev|stage|prod at build time to target the right URL.
-// Defaults to prod so local builds and CI that don't set the var are safe.
-const DEPLOY_ENV = process.env.DEPLOY_ENV ?? 'prod';
-
-const SITE_URLS: Record<string, string> = {
-  dev: 'https://docs.dev.jellycloud.io',
-  stage: 'https://docs.stage.jellycloud.io',
-  prod: 'https://docs.jellycloud.io',
-};
-
-const siteUrl = SITE_URLS[DEPLOY_ENV] ?? SITE_URLS.prod;
+// CI pipeline injects SITE_URL and DEPLOY_ENV for each environment.
+const siteUrl = process.env.SITE_URL ?? 'https://docs.jellycloud.io';
+const isDev = process.env.DEPLOY_ENV === 'dev';
 
 const config: Config = {
   title: 'JellyCloud',
@@ -43,10 +35,9 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // Generates "Edit this page" links pointing to the source file on GitHub.
-          // Format: <editUrl> + relative path to the doc file, e.g.
-          //   https://github.com/jellycloud-io/docs/edit/develop/docs/intro.md
-          editUrl: 'https://github.com/jellycloud-io/docs/edit/develop/',
+          editUrl: isDev
+            ? 'https://github.com/jellycloud-io/docs/edit/develop/'
+            : undefined,
           routeBasePath: '/',
         },
         blog: false,
