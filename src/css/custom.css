@@ -4,27 +4,32 @@
  * work well for content-centric websites.
  */
 
-/* You can override the default Infima variables here. */
+/* JellyCloud brand colors — TODO: replace placeholders with exact hex values */
+
+/* Light mode: blue primary on white background */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #1a56db;         /* TODO: replace with exact brand blue */
+  --ifm-color-primary-dark: #1747c2;
+  --ifm-color-primary-darker: #1541b8;
+  --ifm-color-primary-darkest: #113597;
+  --ifm-color-primary-light: #2563eb;
+  --ifm-color-primary-lighter: #3b71f0;
+  --ifm-color-primary-lightest: #5b87f3;
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(26, 86, 219, 0.08);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* Dark mode: white text on dark blue background, blue accents */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #6a9dff;         /* TODO: replace with exact brand blue light variant */
+  --ifm-color-primary-dark: #4f87ff;
+  --ifm-color-primary-darker: #3d7aff;
+  --ifm-color-primary-darkest: #1a56db;
+  --ifm-color-primary-light: #85b0ff;
+  --ifm-color-primary-lighter: #9cbeff;
+  --ifm-color-primary-lightest: #c0d8ff;
+  --ifm-background-color: #0d1b2e;      /* TODO: replace with exact dark blue */
+  --ifm-navbar-background-color: #0d1b2e;
+  --ifm-footer-background-color: #091525;
+  --docusaurus-highlighted-code-line-bg: rgba(106, 157, 255, 0.12);
 }
