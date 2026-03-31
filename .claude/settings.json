@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx create-docusaurus@3.9.0 . classic --typescript --skip-install)"
+      "Bash(npx create-docusaurus@3.9.0 . classic --typescript --skip-install)",
+      "Bash(npm run:*)"
     ]
   }
 }
