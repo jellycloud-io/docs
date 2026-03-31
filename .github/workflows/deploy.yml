@@ -1,0 +1,99 @@
+name: Deploy Docs Site
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - stage
+          - prod
+        default: stage
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: '22.14.0'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  get-runner:
+    uses: jellycloud-io/ops/.github/workflows/set_runner.yml@main
+    secrets: inherit
+
+  CD:
+    name: Deploy to ${{ inputs.env }}
+    needs: get-runner
+    runs-on: ${{ fromJson(needs.get-runner.outputs.runner) }}
+    timeout-minutes: 20
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.env == 'prod' && secrets.AWS_JELLY_PROD_ROLE || secrets.AWS_JELLY_STAGE_ROLE }}
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Run npm install
+        run: npm ci
+
+      - name: Build docs for ${{ inputs.env }}
+        run: npm run build
+        env:
+          DEPLOY_ENV: ${{ inputs.env }}
+          # prod has no subdomain prefix: docs.jellycloud.io
+          # stage follows the same pattern as other envs: docs.stage.jellycloud.io
+          SITE_URL: ${{ inputs.env == 'prod' && 'https://docs.jellycloud.io' || format('https://docs.{0}.jellycloud.io', inputs.env) }}
+
+      - name: Verify build output
+        run: |
+          echo "Contents of build directory:"
+          ls -la ./build
+          echo "Total files in build:"
+          find ./build -type f | wc -l
+
+      - name: Install AWS CLI
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install --update
+
+      - name: Deploy to S3
+        run: |
+          ENV="${{ inputs.env }}"
+          DOCS_BUCKET_NAME="docs.$ENV.jellycloud.io"
+
+          # prod bucket has no env prefix
+          if [ "$ENV" = "prod" ]; then
+            DOCS_BUCKET_NAME="docs.jellycloud.io"
+          fi
+
+          echo "Deploying to $ENV environment (bucket: $DOCS_BUCKET_NAME)..."
+          aws s3 sync ./build s3://$DOCS_BUCKET_NAME --delete
+          echo "Deployment to $ENV completed"
+
+          echo "Verifying deployment..."
+          aws s3 ls s3://$DOCS_BUCKET_NAME/ --recursive --summarize
+
+      - name: Invalidate CloudFront Cache
+        if: inputs.env == 'prod' # temporarily disable for stage until cloudfront is set up
+        run: |
+          CLOUDFRONT_DIST_ID="${{ inputs.env == 'prod' && vars.PROD_CLOUDFRONT_DOCS_DIST_ID || vars.STAGE_CLOUDFRONT_DOCS_DIST_ID }}"
+
+          echo "Invalidating CloudFront distribution: $CLOUDFRONT_DIST_ID"
+          aws cloudfront create-invalidation \
+            --distribution-id $CLOUDFRONT_DIST_ID \
+            --paths "/*"
