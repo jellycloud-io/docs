@@ -57,7 +57,8 @@ const config: Config = {
       title: 'JellyCloud',
       logo: {
         alt: 'JellyCloud Logo',
-        src: 'img/logo.svg',
+        src: 'img/logo.png',
+        srcDark: 'img/logo-dark.png',
       },
       items: [
         {
