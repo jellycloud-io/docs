@@ -19,6 +19,22 @@
   --docusaurus-highlighted-code-line-bg: rgba(26, 86, 219, 0.08);
 }
 
+/* Console CTA button in navbar */
+.navbar-console-button {
+  border: 1.5px solid var(--ifm-color-primary);
+  border-radius: 6px;
+  padding: 6px 14px !important;
+  font-weight: 600;
+  color: var(--ifm-color-primary) !important;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.navbar-console-button:hover {
+  background-color: var(--ifm-color-primary);
+  color: #fff !important;
+  text-decoration: none;
+}
+
 /* Navbar icon buttons (GitHub, Discord) */
 .navbar-icon-github,
 .navbar-icon-discord {

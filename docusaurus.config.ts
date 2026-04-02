@@ -4,7 +4,11 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 // CI pipeline injects SITE_URL and DEPLOY_ENV for each environment.
 const siteUrl = process.env.SITE_URL ?? 'https://docs.jellycloud.io';
-const isDev = process.env.DEPLOY_ENV === 'dev';
+const DEPLOY_ENV = process.env.DEPLOY_ENV ?? 'prod';
+const isDev = DEPLOY_ENV === 'dev';
+const consoleUrl = DEPLOY_ENV === 'prod'
+  ? 'https://console.jellycloud.io'
+  : `https://console.${DEPLOY_ENV}.jellycloud.io`;
 
 const config: Config = {
   title: 'JellyCloud',
@@ -66,6 +70,12 @@ const config: Config = {
           sidebarId: 'mainSidebar',
           position: 'left',
           label: 'Docs',
+        },
+        {
+          href: consoleUrl,
+          label: 'Console',
+          position: 'right',
+          className: 'navbar-console-button',
         },
         {
           href: 'https://discord.gg/6GtvRvSj',
