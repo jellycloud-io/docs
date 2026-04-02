@@ -67,9 +67,16 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          href: 'https://github.com/jellycloud-io/docs',
-          label: 'GitHub',
+          href: 'https://discord.gg/6GtvRvSj',
           position: 'right',
+          className: 'navbar-icon-discord',
+          'aria-label': 'Discord community',
+        },
+        {
+          href: 'https://github.com/jellycloud-io/docs',
+          position: 'right',
+          className: 'navbar-icon-github',
+          'aria-label': 'GitHub repository',
         },
       ],
     },
