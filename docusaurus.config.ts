@@ -54,7 +54,7 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'JellyCloud',
+      title: '',
       logo: {
         alt: 'JellyCloud Logo',
         src: 'img/logo.png',
