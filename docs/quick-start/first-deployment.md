@@ -9,7 +9,7 @@ sidebar_position: 3
 With your instances connected or configured, you're ready to extend your Kubernetes cluster to run on JellyCloud-managed infrastructure.
 
 :::tip Supported platforms
-Not sure if your cluster or OS is supported? Check the [Supported Platforms](../reference/supported-platforms) page.
+Not sure if your cluster or OS is supported? Check the [Supported Platforms](../supported-platforms) page.
 :::
 
 ## Requirements
