@@ -76,11 +76,6 @@ jobs:
           ENV="${{ inputs.env }}"
           DOCS_BUCKET_NAME="docs.$ENV.jellycloud.io"
 
-          # prod bucket has no env prefix
-          if [ "$ENV" = "prod" ]; then
-            DOCS_BUCKET_NAME="docs.jellycloud.io"
-          fi
-
           echo "Deploying to $ENV environment (bucket: $DOCS_BUCKET_NAME)..."
           aws s3 sync ./build s3://$DOCS_BUCKET_NAME --delete
           echo "Deployment to $ENV completed"
