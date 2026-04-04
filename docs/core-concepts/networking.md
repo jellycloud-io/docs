@@ -8,7 +8,7 @@ sidebar_position: 4
 
 ## Ingress
 
-JellyCloud automatically provisions an ingress endpoint for any workload with `port` defined. You can use a JellyCloud-managed domain or bring your own.
+JellyCloud automatically provisions an ingress endpoint for any workload with `port` defined. You can use a JellyCloud domain or bring your own.
 
 ```yaml
 ingress:

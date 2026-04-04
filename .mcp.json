@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "confluence": {
+      "type": "http",
+      "url": "https://mcp-server.atlassian.com"
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
+  }
+}

@@ -6,16 +6,23 @@ sidebar_position: 1
 
 # Supported Platforms
 
-JellyCloud supports a wide range of infrastructure targets. Choose the platform that fits your team's stack.
+## Kubernetes
 
-## Platform overview
+Any Kubernetes distribution version **1.33 and above** is supported.
 
-| Platform | Status | Notes |
+:::note Unsupported managed modes
+**GKE Autopilot** and **AWS EKS Auto Mode** are not supported. These managed modes take full control of node provisioning and do not allow external node providers, which is incompatible with the JellyCloud Operator.
+:::
+
+## Instances
+
+The following Linux distributions are supported for connecting existing machines as instances via the self-install agent:
+
+| **Linux Distro** | **Versions** | **Arch** |
 |---|---|---|
-| AWS | Generally Available | EKS, EC2, Fargate |
-| Google Cloud | Generally Available | GKE, Cloud Run |
-| Azure | Generally Available | AKS, Container Apps |
-| Kubernetes (self-managed) | Generally Available | 1.26+ |
-| Bare metal | Beta | x86_64 and arm64 |
-
-See each section for setup requirements and feature availability.
+| Debian | 12 (Bookworm), 13 (Trixie) | AMD64 |
+| Ubuntu | 24.04 LTS (Noble Numbat), 22.04 LTS (Jammy Jellyfish) | AMD64, ARM64 |
+| Rocky Linux | 10 | AMD64 |
+| CentOS | 9 Stream, 10 Stream | AMD64 |
+| AlmaLinux | 10 | AMD64 |
+| RHEL | 10 | AMD64 |

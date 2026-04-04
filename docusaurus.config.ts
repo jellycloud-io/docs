@@ -13,7 +13,7 @@ const consoleUrl = DEPLOY_ENV === 'prod'
 const config: Config = {
   title: 'JellyCloud',
   tagline: 'Cloud infrastructure that just works',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   future: {
     v4: true,
@@ -106,6 +106,7 @@ const config: Config = {
           title: 'Platform',
           items: [
             {label: 'Supported Platforms', to: '/supported-platforms'},
+            {label: 'Cloud Providers', to: '/cloud-providers/'},
             {label: 'AI Serving', to: '/ai-serving'},
             {label: 'Configuration', to: '/configuration'},
           ],

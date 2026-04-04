@@ -18,13 +18,19 @@ const sidebars: SidebarsConfig = {
       ],
     },
     {
-      type: 'category',
+      type: 'doc',
+      id: 'supported-platforms/index',
       label: 'Supported Platforms',
-      link: {type: 'doc', id: 'supported-platforms/index'},
+    },
+    {
+      type: 'category',
+      label: 'Cloud Providers',
+      link: {type: 'doc', id: 'cloud-providers/index'},
       items: [
-        'supported-platforms/cloud-providers',
-        'supported-platforms/kubernetes',
-        'supported-platforms/bare-metal',
+        'cloud-providers/gcp',
+        'cloud-providers/civo',
+        'cloud-providers/lambda-labs',
+        'cloud-providers/crusoe',
       ],
     },
     {
