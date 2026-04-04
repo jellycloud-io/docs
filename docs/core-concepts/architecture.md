@@ -10,8 +10,8 @@ sidebar_position: 2
 
 JellyCloud is split into two planes:
 
-- **Control plane** — hosted by JellyCloud, responsible for scheduling, configuration reconciliation, and API serving
-- **Data plane** — runs in your infrastructure, executes workloads, and reports status back to the control plane
+- **Control plane:** hosted by JellyCloud, responsible for scheduling, configuration reconciliation, and API serving
+- **Data plane:** runs in your infrastructure, executes workloads, and reports status back to the control plane
 
 ```
 ┌─────────────────────────────────┐
@@ -34,7 +34,7 @@ JellyCloud is split into two planes:
 
 ## Communication
 
-All communication between the control plane and your infrastructure uses **mutual TLS (mTLS)**. The JellyCloud agent initiates outbound connections only — no inbound ports need to be opened.
+All communication between the control plane and your infrastructure uses **mutual TLS (mTLS)**. The JellyCloud agent initiates outbound connections only. No inbound ports need to be opened.
 
 ## Agent
 

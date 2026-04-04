@@ -10,10 +10,10 @@ JellyCloud provides first-class support for deploying and serving AI and ML mode
 
 ## What's covered
 
-- [Overview](./overview) — AI serving architecture and concepts
-- [Deploying Models](./deploying-models) — how to deploy LLMs and custom models
-- [Scaling](./scaling) — GPU autoscaling and request queuing
-- [Monitoring](./monitoring) — metrics, latency tracking, and cost visibility
+- [Overview](./overview): AI serving architecture and concepts
+- [Deploying Models](./deploying-models): how to deploy LLMs and custom models
+- [Scaling](./scaling): GPU autoscaling and request queuing
+- [Monitoring](./monitoring): metrics, latency tracking, and cost visibility
 
 ## Supported model formats
 

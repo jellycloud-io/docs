@@ -14,12 +14,12 @@ Start by signing up for a JellyCloud account through the Console.
   <a href="https://console.jellycloud.io/signup" className="button button--primary button--lg">Open Console →</a>
 </p>
 
-Fill in the sign-up form and click **Create Account**. JellyCloud will send a confirmation code to your email — enter it to activate your account.
+Fill in the sign-up form and click **Create Account**. JellyCloud will send a confirmation code to your email. Enter it to activate your account.
 
 Two fields worth noting:
 
-- **Tenant name** — a tenant corresponds to a cloud account. If you operate multiple tenants (e.g. dev and prod), each gets its own name.
-- **Tenant color** — a visual label to help distinguish between tenants at a glance, handy when you're working across more than one account.
+- **Tenant name:** a tenant corresponds to a cloud account. If you operate multiple tenants (e.g. dev and prod), each gets its own name.
+- **Tenant color:** a visual label to help distinguish between tenants at a glance, handy when you're working across more than one account.
 
 Once confirmed, you're ready to connect your infrastructure.
 
@@ -33,7 +33,7 @@ Use the self-install link provided in the Console to add existing machines as in
 
 ### Node Pools (Autoscaler)
 
-Configure **Node Pools** to let JellyCloud automatically provision and scale compute on your behalf. Set your desired instance types, minimum and maximum node counts, and the Autoscaler handles the rest — scaling up when demand grows and back down when it subsides.
+Configure **Node Pools** to let JellyCloud automatically provision and scale compute on your behalf. Set your desired instance types, minimum and maximum node counts, and the Autoscaler handles the rest, scaling up when demand grows and back down when it subsides.
 
 ## Next step
 

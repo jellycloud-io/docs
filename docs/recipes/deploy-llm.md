@@ -13,13 +13,13 @@ This recipe walks through deploying **Llama 3 8B** on JellyCloud using vLLM with
 - JellyCloud account with GPU quota enabled
 - Hugging Face token with access to `meta-llama/Meta-Llama-3-8B-Instruct`
 
-## Step 1 — Store your Hugging Face token
+## Step 1: Store your Hugging Face token
 
 ```bash
 jelly secret set HF_TOKEN "hf_..."
 ```
 
-## Step 2 — Create the workload config
+## Step 2: Create the workload config
 
 ```yaml title="jelly.yaml"
 name: llama3-8b
@@ -45,19 +45,19 @@ ingress:
   tls: true
 ```
 
-## Step 3 — Deploy
+## Step 3: Deploy
 
 ```bash
 jelly deploy
 ```
 
-Wait for the workload to reach `Running` status (typically 2–5 minutes for model download):
+Wait for the workload to reach `Running` status (typically 2 to 5 minutes for model download):
 
 ```bash
 jelly status llama3-8b --watch
 ```
 
-## Step 4 — Test the endpoint
+## Step 4: Test the endpoint
 
 ```bash
 curl https://llama3.myproject.jellycloud.app/v1/chat/completions \

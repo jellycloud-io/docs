@@ -6,10 +6,10 @@ sidebar_position: 1
 
 # Support
 
-Need help with JellyCloud? You're in the right place.
+Have a question or need help? Reach out. We're here.
 
-| Resource | Description |
-|---|---|
-| [FAQ](./faq) | Answers to the most common questions |
-| [Troubleshooting](./troubleshooting) | Diagnose and fix common issues |
-| [Contact](./contact) | Reach the JellyCloud team |
+**Email:** [support@jellycloud.io](mailto:support@jellycloud.io)
+
+We monitor this inbox closely and will do our best to accommodate every request.
+
+**Discord:** Join our community at [discord.gg/6GtvRvSj](https://discord.gg/6GtvRvSj) for faster responses and to connect with other JellyCloud users.

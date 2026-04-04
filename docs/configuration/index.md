@@ -10,6 +10,6 @@ JellyCloud is configured through `jelly.yaml` files committed to your repository
 
 ## Topics
 
-- [Global Settings](./global-settings) — project-level settings, regions, and resource defaults
-- [Environment Variables](./environment-variables) — passing env vars to your workloads
-- [Secrets](./secrets) — securely injecting credentials and API keys
+- [Global Settings](./global-settings): project-level settings, regions, and resource defaults
+- [Environment Variables](./environment-variables): passing env vars to your workloads
+- [Secrets](./secrets): securely injecting credentials and API keys

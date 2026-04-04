@@ -32,9 +32,9 @@ Client Request
 
 All inference traffic passes through the JellyCloud Inference Gateway, which handles:
 
-- **Request batching** — groups concurrent requests to maximize GPU utilization
-- **Queue management** — buffers requests during traffic spikes instead of dropping them
-- **Routing** — directs traffic to the least-loaded healthy replica
+- **Request batching:** groups concurrent requests to maximize GPU utilization
+- **Queue management:** buffers requests during traffic spikes instead of dropping them
+- **Routing:** directs traffic to the least-loaded healthy replica
 
 ### Model storage
 
@@ -45,6 +45,6 @@ Models are loaded at startup from object storage (S3, GCS, Azure Blob). JellyClo
 | Accelerator | Use case |
 |---|---|
 | `nvidia-a100` | Large LLMs (70B+ params) |
-| `nvidia-a10g` | Mid-size models (7B–13B params) |
+| `nvidia-a10g` | Mid-size models (7B to 13B params) |
 | `nvidia-t4` | Small models, cost-sensitive workloads |
 | `cpu` | Lightweight models, GGUF quantized |

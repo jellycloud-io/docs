@@ -10,7 +10,7 @@ This recipe configures autoscaling for a GPU inference workload to handle bursty
 
 ## Strategy
 
-Scale based on **request queue depth** — when more requests are queued than your replicas can handle, JellyCloud adds replicas. When the queue clears, it scales back down after a cooldown period.
+Scale based on **request queue depth**. When more requests are queued than your replicas can handle, JellyCloud adds replicas. When the queue clears, it scales back down after a cooldown period.
 
 ## Configuration
 

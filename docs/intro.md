@@ -7,7 +7,7 @@ title: Introduction
 
 # Welcome to JellyCloud
 
-JellyCloud is a SaaS platform that helps DevOps and platform teams deploy, scale, and operate cloud infrastructure — including AI workloads — without the complexity.
+JellyCloud is a SaaS platform that helps DevOps and platform teams deploy, scale, and operate cloud infrastructure (including AI workloads) without the complexity.
 
 ## What is JellyCloud?
 

@@ -43,8 +43,8 @@ replicas: 2
 
 ## Workload lifecycle
 
-1. **Pending** — workload accepted, infrastructure being provisioned
-2. **Running** — all replicas healthy and serving
-3. **Degraded** — some replicas unavailable
-4. **Stopped** — workload intentionally stopped
-5. **Failed** — workload exited with errors
+1. **Pending:** workload accepted, infrastructure being provisioned
+2. **Running:** all replicas healthy and serving
+3. **Degraded:** some replicas unavailable
+4. **Stopped:** workload intentionally stopped
+5. **Failed:** workload exited with errors

@@ -8,8 +8,8 @@ sidebar_position: 4
 
 JellyCloud supports two modes for connecting a cloud provider:
 
-- **BYO Cloud** — connect your own cloud account. JellyCloud provisions and manages instances within your account using your credentials.
-- **JellyCloud** — JellyCloud operates the cloud infrastructure on your behalf, no account required.
+- **BYO Cloud:** connect your own cloud account. JellyCloud provisions and manages instances within your account using your credentials.
+- **JellyCloud:** JellyCloud operates the cloud infrastructure on your behalf, no account required.
 
 ## Supported providers
 

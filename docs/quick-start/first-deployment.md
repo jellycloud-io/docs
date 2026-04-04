@@ -17,7 +17,7 @@ Not sure if your cluster or OS is supported? Check the [Supported Platforms](../
 Your cluster needs at least one node with **2 vCPUs** and **4 GB memory** available to run the JellyCloud Operator. No network or firewall configuration is required.
 
 :::tip Multiple clusters
-You can connect any number of Kubernetes clusters to JellyCloud — all of them share the same pool of connected instances. Workloads across clusters remain fully isolated from one another.
+You can connect any number of Kubernetes clusters to JellyCloud. All of them share the same pool of connected instances. Workloads across clusters remain fully isolated from one another.
 :::
 
 ## 1. Connect your cluster
@@ -34,7 +34,7 @@ The generated Helm command contains secrets unique to your tenant. Do not share 
 
 ## 2. Install the JellyCloud Operator
 
-Copy the Helm command from the Console and run it on your cluster. The command installs the JellyCloud Operator into a `jelly` namespace and authenticates it using the token embedded in the link — no extra configuration needed.
+Copy the Helm command from the Console and run it on your cluster. The command installs the JellyCloud Operator into a `jelly` namespace and authenticates it using the token embedded in the link. No extra configuration needed.
 
 ## 3. Wait for the Operator to initialize
 
@@ -50,11 +50,11 @@ Wait until all pods show `Running`, then check your cluster nodes:
 kubectl get nodes
 ```
 
-You'll see virtual nodes added by JellyCloud alongside your existing ones. Each JellyCloud node represents a group of instances sharing the same architecture. Run `kubectl describe node <node-name>` to inspect a node — the allocatable capacity (CPU, memory, and GPU where applicable) reflects the actual resources of the instances you connected.
+You'll see virtual nodes added by JellyCloud alongside your existing ones. Each JellyCloud node represents a group of instances sharing the same architecture. Run `kubectl describe node <node-name>` to inspect a node. The allocatable capacity (CPU, memory, and GPU where applicable) reflects the actual resources of the instances you connected.
 
 ## 4. Deploy your workloads
 
-Your cluster is now ready. Run any standard Kubernetes `Deployment` or `StatefulSet` and JellyCloud will schedule it across the nodes and cloud providers of your choice — no changes to your manifests required.
+Your cluster is now ready. Run any standard Kubernetes `Deployment` or `StatefulSet` and JellyCloud will schedule it across the nodes and cloud providers of your choice. No changes to your manifests required.
 
 ```bash
 kubectl apply -f my-deployment.yaml
@@ -66,9 +66,9 @@ Don't have a deployment handy? The [Recipes](../recipes) page has ready-to-run e
 
 Use your existing tools to manage workloads as you normally would:
 
-- **kubectl** — full CLI access to your cluster
-- **Kubernetes Dashboard** — standard dashboard works without modification
-- **JellyCloud Console** — provides additional observability for your workloads, including cross-cluster visibility, resource utilization, and instance health
+- **kubectl:** full CLI access to your cluster
+- **Kubernetes Dashboard:** standard dashboard works without modification
+- **JellyCloud Console:** provides additional observability for your workloads, including cross-cluster visibility, resource utilization, and instance health
 
 ## Next step
 

@@ -76,14 +76,9 @@ const sidebars: SidebarsConfig = {
       ],
     },
     {
-      type: 'category',
+      type: 'doc',
+      id: 'support/index',
       label: 'Support',
-      link: {type: 'doc', id: 'support/index'},
-      items: [
-        'support/faq',
-        'support/troubleshooting',
-        'support/contact',
-      ],
     },
   ],
 };
