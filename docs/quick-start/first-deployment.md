@@ -60,7 +60,7 @@ Your cluster is now ready. Run any standard Kubernetes `Deployment` or `Stateful
 kubectl apply -f my-deployment.yaml
 ```
 
-Don't have a deployment handy? The [Recipes](../recipes) page has ready-to-run example applications you can use to try things out.
+Don't have a deployment handy? Browse the [jelly-bites](https://github.com/jellycloud-io/jelly-bites) sample repository for ready-to-run applications.
 
 ## 5. Monitor and operate
 

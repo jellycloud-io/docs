@@ -18,11 +18,9 @@ You've deployed your first workload. Here's where to go from here:
 
 - **[AI Serving](/ai-serving):** Deploy LLMs and ML models with GPU-aware scheduling
 
-## Follow a recipe
+## Sample applications
 
-- **[Deploy an LLM](/recipes/deploy-llm):** Step-by-step guide for serving a large language model
-- **[Autoscale GPUs](/recipes/autoscaling-gpu):** Scale GPU pods based on inference demand
-- **[CI/CD Integration](/recipes/ci-cd-integration):** Automate deployments from GitHub Actions
+- **[jelly-bites](https://github.com/jellycloud-io/jelly-bites):** Ready-to-run sample applications for the JellyCloud platform
 
 ## Get help
 

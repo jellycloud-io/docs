@@ -6,6 +6,53 @@
 
 /* JellyCloud brand colors — TODO: replace placeholders with exact hex values */
 
+/* Typography */
+:root {
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.65;
+  --ifm-h1-font-size: 2rem;
+  --ifm-h2-font-size: 1.4rem;
+  --ifm-h3-font-size: 1.15rem;
+  --ifm-font-weight-bold: 600;
+}
+
+/* Slightly larger and more readable doc body text */
+.markdown {
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+
+.markdown h1 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.markdown h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Generated-index card grid: make cards look consistent with our style */
+.generatedIndexPage h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cardContainer_fWXF {
+  border-radius: 10px !important;
+  border: 1px solid var(--ifm-color-emphasis-200) !important;
+  transition: box-shadow 0.2s, border-color 0.2s !important;
+}
+
+.cardContainer_fWXF:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  border-color: var(--ifm-color-primary) !important;
+  text-decoration: none !important;
+}
+
 /* Light mode: blue primary on white background */
 :root {
   --ifm-color-primary: #1a56db;         /* TODO: replace with exact brand blue */

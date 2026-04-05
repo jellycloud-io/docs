@@ -10,7 +10,12 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Quick Start',
-      link: {type: 'doc', id: 'quick-start/index'},
+      link: {
+        type: 'generated-index',
+        title: 'Quick Start',
+        description: 'Get your first workload running on JellyCloud in minutes.',
+        slug: '/quick-start',
+      },
       items: [
         'quick-start/installation',
         'quick-start/first-deployment',
@@ -35,8 +40,13 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Core Concepts',
-      link: {type: 'doc', id: 'core-concepts/index'},
+      label: 'Core Concepts - TBD',
+      link: {
+        type: 'generated-index',
+        title: 'Core Concepts',
+        description: "Understanding JellyCloud's building blocks will help you design reliable, scalable deployments.",
+        slug: '/core-concepts',
+      },
       items: [
         'core-concepts/architecture',
         'core-concepts/workloads',
@@ -46,8 +56,13 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Configuration',
-      link: {type: 'doc', id: 'configuration/index'},
+      label: 'Configuration - TBD',
+      link: {
+        type: 'generated-index',
+        title: 'Configuration',
+        description: 'JellyCloud is configured through jelly.yaml files committed to your repository.',
+        slug: '/configuration',
+      },
       items: [
         'configuration/global-settings',
         'configuration/environment-variables',
@@ -56,8 +71,13 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'AI Serving',
-      link: {type: 'doc', id: 'ai-serving/index'},
+      label: 'AI Serving - TBD',
+      link: {
+        type: 'generated-index',
+        title: 'AI Serving',
+        description: 'First-class support for deploying and serving AI and ML models at scale.',
+        slug: '/ai-serving',
+      },
       items: [
         'ai-serving/overview',
         'ai-serving/deploying-models',
@@ -66,14 +86,9 @@ const sidebars: SidebarsConfig = {
       ],
     },
     {
-      type: 'category',
+      type: 'doc',
+      id: 'recipes/index',
       label: 'Recipes',
-      link: {type: 'doc', id: 'recipes/index'},
-      items: [
-        'recipes/deploy-llm',
-        'recipes/autoscaling-gpu',
-        'recipes/ci-cd-integration',
-      ],
     },
     {
       type: 'doc',

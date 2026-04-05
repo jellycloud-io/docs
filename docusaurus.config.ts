@@ -99,11 +99,11 @@ const config: Config = {
           items: [
             {label: 'Introduction', to: '/'},
             {label: 'Quick Start', to: '/quick-start'},
-            {label: 'Core Concepts', to: '/core-concepts'},
+            {label: 'Core Concepts - TBD', to: '/core-concepts'},
           ],
         },
         {
-          title: 'Platform',
+          title: 'Platform - TBD',
           items: [
             {label: 'Supported Platforms', to: '/supported-platforms'},
             {label: 'Cloud Providers', to: '/cloud-providers/'},

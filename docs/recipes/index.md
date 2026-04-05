@@ -6,10 +6,4 @@ sidebar_position: 1
 
 # Recipes
 
-Recipes are end-to-end guides for common tasks on JellyCloud.
-
-| Recipe | Description |
-|---|---|
-| [Deploy an LLM](./deploy-llm) | Serve a large language model with vLLM |
-| [Autoscale GPUs](./autoscaling-gpu) | Scale GPU inference pods based on demand |
-| [CI/CD Integration](./ci-cd-integration) | Automate deployments from GitHub Actions |
+The **[jelly-bites](https://github.com/jellycloud-io/jelly-bites)** repository contains a growing collection of sample and demo applications built for the JellyCloud platform. Each sample illustrates different configuration options and Kubernetes frameworks, so you can pick one that matches your stack and run it as-is or adapt it to your needs.

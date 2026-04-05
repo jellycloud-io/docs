@@ -8,13 +8,17 @@ sidebar_position: 2
 
 Connect your Civo account to JellyCloud using an API key.
 
-## 1. Generate an API key
+## 1. Get your API key
 
-1. Log in to your [Civo account](https://dashboard.civo.com/).
-2. Click your profile icon in the top-right corner and go to **Profile**.
-3. Select the **Security** tab.
-4. Under **API Keys**, click **Generate API Key**, give it a name, and copy the key.
+1. Log in to your Civo account and navigate to the [Profile/Security](https://dashboard.civo.com/security) section of your Civo account  page.
+2. Your API key is displayed there. Copy it.
+
+If your account belongs to an organization, you may see multiple keys — each tied to a specific account. Copy the one for the account you want to connect.
+
+:::tip Regenerating your key
+If you need to rotate your credentials, click **Regenerate** next to the key. The change takes effect immediately and the old key stops working, so update any existing integrations right away.
+:::
 
 ## 2. Add to JellyCloud
 
-In the Console, go to **Cloud Providers → Add Provider**, select **Civo**, and paste your API key.
+In the Console, go to **Cloud Providers**, click **Add Provider**, select **Civo**, and paste your API key.
