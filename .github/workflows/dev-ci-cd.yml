@@ -3,92 +3,26 @@ name: Dev CI/CD
 on:
   push:
     branches: [develop]
-  workflow_dispatch:
-    inputs:
-      actor:
-        description: 'GitHub actor who triggered the workflow'
-        required: false
-      runner:
-        description: 'Set the Run-On Environment'
-        required: true
-        default: ubuntu-latest
-
-env:
-  AWS_REGION: us-east-1
-  DOCS_BUCKET_NAME: docs.dev.jellycloud.io
-  NODE_VERSION: '22.14.0'
-
-permissions:
-  id-token: write
-  contents: read
 
 jobs:
   get-runner:
     uses: jellycloud-io/ops/.github/workflows/set_runner.yml@main
     secrets: inherit
 
-  CD:
-    name: CI & CD
-    needs: get-runner
+  run-build:
+    needs: [get-runner]
     runs-on: ${{ fromJson(needs.get-runner.outputs.runner) }}
-    timeout-minutes: 20
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
+      - name: Deploy Docs
+        uses: convictional/trigger-workflow-and-wait@v1.6.1
         with:
+          owner: JELLYCLOUD-IO
+          github_token: ${{ secrets.CI_CD_ACCESS_TOKEN }}
+          repo: ops
           ref: develop
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_JELLY_DEV_ROLE }}
-          role-session-name: GitHub_to_AWS_via_FederatedOIDC
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Set Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Run npm install
-        run: npm ci
-
-      - name: Build docs for dev
-        if: ${{ ! github.event.inputs.actor }}
-        run: npm run build
-        env:
-          DEPLOY_ENV: dev
-          SITE_URL: https://${{ env.DOCS_BUCKET_NAME }}
-
-      - name: Build docs for "${{ github.event.inputs.actor }}" mini-dev
-        if: ${{ github.event.inputs.actor }}
-        run: npm run build
-        env:
-          DEPLOY_ENV: dev
-          SITE_URL: https://${{ github.event.inputs.actor }}.${{ env.DOCS_BUCKET_NAME }}
-
-      - name: Verify build output
-        run: |
-          echo "Contents of build directory:"
-          ls -la ./build
-          echo "Total files in build:"
-          find ./build -type f | wc -l
-
-      - name: Install AWS CLI
-        run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install --update
-
-      - name: Deploy docs to ${{ env.DOCS_BUCKET_NAME }} bucket
-        if: ${{ ! github.event.inputs.actor }}
-        run: |
-          aws s3 sync ./build s3://${{ env.DOCS_BUCKET_NAME }} --delete
-          # --delete: Deletes files in the destination S3 bucket that don't exist in the local build, ensuring a clean deployment
-
-      - name: Deploy docs to "${{ github.event.inputs.actor }}" mini-dev bucket
-        if: ${{ github.event.inputs.actor }}
-        run: |
-          aws s3 sync ./build s3://${{ github.event.inputs.actor }}.${{ env.DOCS_BUCKET_NAME }} --delete
-          # --delete: Deletes files in the destination S3 bucket that don't exist in the local build, ensuring a clean deployment
+          workflow_file_name: __docs_release_deploy.yml
+          client_payload: '{"env":"dev"}'
+          wait_interval: 10
+          propagate_failure: true
+          trigger_workflow: true
+          wait_workflow: true
