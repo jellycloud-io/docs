@@ -19,7 +19,7 @@ jobs:
           owner: JELLYCLOUD-IO
           github_token: ${{ secrets.CI_CD_ACCESS_TOKEN }}
           repo: ops
-          ref: develop
+          ref: main
           workflow_file_name: __docs_release_deploy.yml
           client_payload: '{"env":"dev"}'
           wait_interval: 10
