@@ -1,14 +1,22 @@
-name: Dev CI/CD
+name: Deploy Docs Site
 
 on:
-  push:
-    branches: [develop]
-
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - stage
+          - prod
+        default: stage
 jobs:
   get-runner:
     uses: jellycloud-io/ops/.github/workflows/set_runner.yml@main
     secrets: inherit
 
+  # Invoke reusable workflow file which is kept in a private repository
   run-build:
     needs: [get-runner]
     runs-on: ${{ fromJson(needs.get-runner.outputs.runner) }}
@@ -21,7 +29,7 @@ jobs:
           repo: ops
           ref: main
           workflow_file_name: __docs_release_deploy.yml
-          client_payload: '{"env":"dev","ref":"${{ github.ref }}"}'
+          client_payload: '{"env":"${{ inputs.env }}","ref":"${{ github.ref }}"}'
           wait_interval: 10
           propagate_failure: true
           trigger_workflow: true
