@@ -21,7 +21,7 @@ jobs:
           repo: ops
           ref: main
           workflow_file_name: __docs_release_deploy.yml
-          client_payload: '{"env":"dev"}'
+          client_payload: '{"env":"dev","ref":"${{ github.ref }}"}'
           wait_interval: 10
           propagate_failure: true
           trigger_workflow: true
