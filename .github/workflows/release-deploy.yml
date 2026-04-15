@@ -12,14 +12,9 @@ on:
           - prod
         default: stage
 jobs:
-  get-runner:
-    uses: jellycloud-io/ops/.github/workflows/set_runner.yml@main
-    secrets: inherit
-
   # Invoke reusable workflow file which is kept in a private repository
   run-build:
-    needs: [get-runner]
-    runs-on: ${{ fromJson(needs.get-runner.outputs.runner) }}
+    runs-on: ubuntu-latest
     steps:
       - name: Deploy Docs
         uses: convictional/trigger-workflow-and-wait@v1.6.1
