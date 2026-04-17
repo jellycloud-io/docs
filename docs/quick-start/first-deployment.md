@@ -25,7 +25,7 @@ You can connect any number of Kubernetes clusters to JellyCloud. All of them sha
 In the Console, go to the **Resources** page and click **Connect Cluster**. JellyCloud will generate a Helm command with an auto-generated secret unique to your tenant.
 
 <p>
-  <a href="https://console.jellycloud.io/resources" className="button button--primary button--lg">Open Console →</a>
+  <a href="{{CONSOLE_URL}}/resources" className="button button--primary button--lg">Open Console →</a>
 </p>
 
 :::warning Keep your Helm link private

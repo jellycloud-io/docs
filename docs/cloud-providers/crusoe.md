@@ -8,7 +8,7 @@ sidebar_position: 4
 
 Connect your Crusoe account to JellyCloud using an access key and secret.
 
-## 1. Create an API key
+## 1. Create an API key {#credentials}
 
 1. Log in to the [Crusoe Cloud console](https://console.crusoecloud.com/).
 2. Click the profile icon in the top-right corner and select **Security**.

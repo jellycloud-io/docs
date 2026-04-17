@@ -11,7 +11,7 @@ sidebar_position: 2
 Start by signing up for a JellyCloud account through the Console.
 
 <p>
-  <a href="https://console.jellycloud.io/signup" className="button button--primary button--lg">Open Console →</a>
+  <a href="{{CONSOLE_URL}}/signup" className="button button--primary button--lg">Open Console →</a>
 </p>
 
 Fill in the sign-up form and click **Create Account**. JellyCloud will send a confirmation code to your email. Enter it to activate your account.
