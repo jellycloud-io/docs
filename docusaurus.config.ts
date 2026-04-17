@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
-const DEPLOY_ENV = process.env.DEPLOY_ENV ?? 'production';
+const DEPLOY_ENV = process.env.DEPLOY_ENV ?? 'prod';
 dotenv.config({path: path.resolve(__dirname, `.env.${DEPLOY_ENV}`)});
 
 const siteUrl = process.env.SITE_URL ?? 'https://docs.jellycloud.io';
