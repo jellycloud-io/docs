@@ -12,6 +12,39 @@
 - In numbered or bulleted lists, use a colon after the bold term rather than a dash (e.g. "**Term:** description" not "**Term** — description").
 - In numeric ranges, use "to" rather than an en dash (e.g. "2 to 5 minutes" not "2–5 minutes").
 
+## Cloud provider page structure
+
+Each file under `docs/cloud-providers/` must follow this structure exactly:
+
+```markdown
+---
+id: <provider-id>
+title: <Provider Name>
+sidebar_position: <N>
+---
+
+# <Provider Name>
+
+## Connect your account {#credentials}
+
+<One sentence describing what credential type is used to connect.>
+
+### <Step to obtain credentials>
+
+<Instructions for getting the credential from the provider's console or CLI.>
+
+### Add to JellyCloud
+
+In the Console, go to **Cloud Providers**, click **Add Provider**, select **<Provider Name>**, and <describe what to enter/upload>.
+```
+
+Rules:
+- The `## Connect your account {#credentials}` heading is mandatory and must use exactly that title and tag. This makes the section deep-linkable via `#credentials` on every provider page.
+- The intro sentence (what credential type is used) goes **under** the `## Connect your account` heading, not above it.
+- Credential-retrieval steps are `###` subsections under `## Connect your account`.
+- If a provider offers multiple methods (e.g., console and CLI), use `### Option A:` and `### Option B:` subsections, then a final `### Add to JellyCloud` subsection.
+- Do not add a standalone intro paragraph above `## Connect your account` — the page title (`#`) is sufficient context.
+
 ## Product facts
 
 - The internal Kubernetes namespace used by JellyCloud is `jelly`.

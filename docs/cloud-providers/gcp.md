@@ -6,11 +6,11 @@ sidebar_position: 1
 
 # Google Cloud (GCP)
 
-Connect your GCP account to JellyCloud using a service account JSON key file.
+## Connect your account {#credentials}
 
-The platform requires a GCP service account JSON key to manage compute resources on your behalf.
+Connect your GCP account to JellyCloud using a service account JSON key file. The platform requires a GCP service account JSON key to manage compute resources on your behalf.
 
-## Option A: Google Cloud Console
+### Option A: Google Cloud Console
 
 1. Open the [GCP Console](https://console.cloud.google.com/) and select your project.
 2. Go to **IAM & Admin → Service Accounts**.
@@ -26,7 +26,7 @@ The platform requires a GCP service account JSON key to manage compute resources
 
 A `.json` file will download automatically. This is the file to upload to JellyCloud.
 
-## Option B: gcloud CLI
+### Option B: gcloud CLI
 
 ```bash
 # Set your project
@@ -55,6 +55,6 @@ gcloud iam service-accounts keys create credentials.json \
 
 The file `credentials.json` is now ready to upload to JellyCloud.
 
-## Add to JellyCloud
+### Add to JellyCloud
 
 In the Console, go to **Cloud Providers → Add Provider**, select **Google Cloud**, and upload the JSON key file.

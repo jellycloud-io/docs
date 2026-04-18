@@ -23,15 +23,20 @@
 }
 
 .markdown h1 {
-  font-size: 1.9rem;
+  font-size: 2rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
 .markdown h2 {
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+
+.markdown h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
 /* Generated-index card grid: make cards look consistent with our style */
