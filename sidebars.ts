@@ -8,19 +8,9 @@ const sidebars: SidebarsConfig = {
       label: 'Introduction',
     },
     {
-      type: 'category',
+      type: 'doc',
+      id: 'quick-start',
       label: 'Quick Start',
-      link: {
-        type: 'generated-index',
-        title: 'Quick Start',
-        description: 'Get your first workload running on JellyCloud in minutes.',
-        slug: '/quick-start',
-      },
-      items: [
-        'quick-start/installation',
-        'quick-start/first-deployment',
-        'quick-start/whats-next',
-      ],
     },
     {
       type: 'doc',
@@ -39,9 +29,13 @@ const sidebars: SidebarsConfig = {
       ],
     },
     {
-      type: 'doc',
-      id: 'core-concepts/index',
+      type: 'category',
       label: 'Core Concepts',
+      link: {type: 'doc', id: 'core-concepts/index'},
+      items: [
+        'core-concepts/architecture',
+        'core-concepts/jelly-nodes',
+      ],
     },
     {
       type: 'doc',

@@ -6,6 +6,5 @@ sidebar_position: 1
 
 # Core Concepts
 
-:::caution Coming soon
-This section is under construction.
-:::
+- [Architecture](./architecture.mdx) — How JellyCloud is deployed and how its components fit together.
+- [Jelly Nodes](./jelly-nodes.md) — How virtual nodes represent and aggregate remote compute in your cluster.

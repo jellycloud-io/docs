@@ -44,6 +44,10 @@ const config: Config = {
   organizationName: 'jellycloud-io',
   projectName: 'docs',
 
+  customFields: {
+    consoleUrl,
+  },
+
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 
