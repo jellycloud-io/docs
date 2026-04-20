@@ -6,24 +6,55 @@ sidebar_position: 1
 
 # Google Cloud (GCP)
 
-Connect your GCP account to JellyCloud using a service account.
+## Connect your account {#credentials}
 
-## 1. Create a service account
+Connect your GCP account to JellyCloud using a service account JSON key file. The platform requires a GCP service account JSON key to manage compute resources on your behalf.
+
+### Option A: Google Cloud Console
 
 1. Open the [GCP Console](https://console.cloud.google.com/) and select your project.
 2. Go to **IAM & Admin → Service Accounts**.
-3. Click **Create Service Account**, give it a name (e.g. `jellycloud`), and click **Create and Continue**.
-4. Grant the following roles:
-   - `Compute Admin`
-   - `Service Account User`
-5. Click **Done**.
+3. Click **Create Service Account**.
+4. **Name:** e.g. `jellycloud-platform`
+5. Click **Create and Continue**.
+6. In **Grant this service account access to the project**, add both roles:
+   - `Compute Instance Admin (v1)` (`roles/compute.instanceAdmin.v1`)
+   - `Compute Storage Admin` (`roles/compute.storageAdmin`)
+7. Click **Continue**, then **Done**.
+8. Click the service account you just created and go to the **Keys** tab.
+9. Click **Add Key → Create new key → JSON → Create**.
 
-## 2. Generate a key
+A `.json` file will download automatically. This is the file to upload to JellyCloud.
 
-1. Click on the service account you just created.
-2. Go to the **Keys** tab and click **Add Key → Create new key**.
-3. Choose **JSON** and click **Create**. A key file will be downloaded.
+### Option B: gcloud CLI
 
-## 3. Add to JellyCloud
+```bash
+# Set your project
+PROJECT_ID="your-project-id"
+SA_NAME="jellycloud-platform"
+SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
+
+# Create the service account
+gcloud iam service-accounts create "${SA_NAME}" \
+  --project="${PROJECT_ID}" \
+  --display-name="JellyCloud Platform"
+
+# Grant required roles
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/compute.instanceAdmin.v1"
+
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/compute.storageAdmin"
+
+# Generate and download the JSON key
+gcloud iam service-accounts keys create credentials.json \
+  --iam-account="${SA_EMAIL}"
+```
+
+The file `credentials.json` is now ready to upload to JellyCloud.
+
+### Add to JellyCloud
 
 In the Console, go to **Cloud Providers → Add Provider**, select **Google Cloud**, and upload the JSON key file.

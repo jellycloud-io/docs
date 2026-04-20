@@ -1,0 +1,41 @@
+---
+id: architecture
+title: Architecture
+sidebar_position: 2
+---
+
+# Architecture
+
+JellyCloud is a control plane that runs in your cloud account and manages compute resources across any supported cloud provider or environment. The diagrams below use AWS as the reference deployment, but the same architecture applies to any cloud or on-premises environment.
+
+JellyCloud is designed to integrate with your existing operations without requiring changes to how your teams work.
+
+Teams running private Kubernetes clusters can keep those clusters fully isolated from outside networks. All traffic is routed through JellyCloud, which acts as a secured transport gateway.
+
+![JellyCloud Architecture](/img/architecture-aws.svg)
+
+Teams can also choose to interconnect isolated clouds or expose public IPs for inbound traffic. In this mode, point-to-point connections are established to reduce latency. JellyCloud takes advantage of direct connectivity when available without requiring it. The same security controls and encryption apply in both modes.
+
+In regulated environments with strict firewall rules, only a small set of allowlisted outbound IP addresses is required.
+
+![JellyCloud Architecture](/img/architecture-aws-direct.svg)
+
+## Key Components
+
+### Cluster Operator
+
+JellyCloud deploys into a Kubernetes cluster running in your own cloud account.
+
+The cluster operator is wholly within your network perimeter. You retain ownership of the infrastructure and the credentials used to manage it. Isolating JellyCloud into its own namespace makes it straightforward to apply Kubernetes RBAC policies, network policies, and resource quotas specific to the platform.
+
+### SaaS Platform
+
+The JellyCloud SaaS layer is an orchestration and scheduling layer. It abstracts the complexity of working with multiple clouds and networks, making it seamless for teams to operate cross-cloud workload scheduling, auto-scaling, and observability.
+
+Communication between the Cluster Operator and the SaaS layer is outbound-initiated (no network changes required) and encrypted in transit.
+
+### Worker Nodes
+
+Worker nodes are the compute instances where your actual workloads run. JellyCloud provisions and manages these nodes on your behalf in any connected cloud provider account, authenticating to each target environment using the credentials you supply (see the [Cloud Providers](/cloud-providers) section).
+
+This allows you to run workloads across multiple providers from a single JellyCloud deployment, with all data and compute remaining within your cloud accounts.

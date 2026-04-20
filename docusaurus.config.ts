@@ -1,14 +1,33 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 
-// CI pipeline injects SITE_URL and DEPLOY_ENV for each environment.
-const siteUrl = process.env.SITE_URL ?? 'https://docs.jellycloud.io';
 const DEPLOY_ENV = process.env.DEPLOY_ENV ?? 'prod';
-const isDev = DEPLOY_ENV === 'dev';
-const consoleUrl = DEPLOY_ENV === 'prod'
-  ? 'https://console.jellycloud.io'
-  : `https://console.${DEPLOY_ENV}.jellycloud.io`;
+dotenv.config({path: path.resolve(__dirname, `.env.${DEPLOY_ENV}`)});
+
+const siteUrl = process.env.SITE_URL ?? 'https://docs.jellycloud.io';
+const consoleUrl = process.env.CONSOLE_URL ?? 'https://console.jellycloud.io';
+const docsEditUrl = process.env.DOCS_EDIT_URL;
+
+const urlTokens: Record<string, string> = {
+  CONSOLE_URL: consoleUrl,
+};
+
+function remarkReplaceUrlTokens() {
+  return (tree: import('mdast').Root) => {
+    const {visit} = require('unist-util-visit');
+    visit(tree, (node: import('unist').Node & {url?: string; value?: string}) => {
+      if (node.url) {
+        node.url = node.url.replace(/\{\{(\w+)\}\}/g, (_: string, key: string) => urlTokens[key] ?? `{{${key}}}`);
+      }
+      if (node.type === 'html' && node.value) {
+        node.value = node.value.replace(/\{\{(\w+)\}\}/g, (_: string, key: string) => urlTokens[key] ?? `{{${key}}}`);
+      }
+    });
+  };
+}
 
 const config: Config = {
   title: 'JellyCloud',
@@ -25,6 +44,10 @@ const config: Config = {
   organizationName: 'jellycloud-io',
   projectName: 'docs',
 
+  customFields: {
+    consoleUrl,
+  },
+
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 
@@ -39,14 +62,17 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: isDev
-            ? 'https://github.com/jellycloud-io/docs/edit/develop/'
-            : undefined,
+          editUrl: docsEditUrl,
           routeBasePath: '/',
+          remarkPlugins: [remarkReplaceUrlTokens],
         },
         blog: false,
         theme: {
           customCss: './src/css/custom.css',
+        },
+        gtag: {
+          trackingID: 'G-721ZLR0KJW',
+          anonymizeIP: true,
         },
       } satisfies Preset.Options,
     ],
@@ -108,7 +134,7 @@ const config: Config = {
             {label: 'Supported Platforms', to: '/supported-platforms'},
             {label: 'Cloud Providers', to: '/cloud-providers/'},
             {label: 'AI Serving', to: '/ai-serving'},
-            {label: 'Configuration', to: '/configuration'},
+            {label: 'Policies', to: '/policies'},
           ],
         },
         {
