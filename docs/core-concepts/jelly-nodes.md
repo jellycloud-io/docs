@@ -8,7 +8,7 @@ sidebar_position: 3
 
 ## Overview
 
-When you connect a Kubernetes cluster to JellyCloud, new nodes appear alongside your existing ones. These are Jelly Virtual Nodes — they are not physical machines joined to the cluster directly. Each virtual node is a logical representation of a group of remote instances that share the same hardware architecture and node selector.
+When you connect a Kubernetes cluster to JellyCloud, new nodes appear alongside your existing ones. These are Jelly Virtual Nodes - they are not physical machines joined to the cluster directly. Each virtual node is a logical representation of a group of remote instances that share the same hardware architecture and node selector.
 
 From Kubernetes' perspective, a Jelly Virtual Node looks and behaves like any other node. You can inspect it with `kubectl get nodes` or `kubectl describe node <node-name>`, read metrics, and target it with `nodeSelector` or `nodeAffinity` rules in your workload manifests. No changes to your existing tooling or workflows are required.
 
@@ -26,6 +26,8 @@ This aggregation model gives you significant flexibility when working with remot
 
 ## Node selectors
 
-Each Jelly Virtual Node is labeled with the architecture and instance type it represents. You can use these standard labels alongside JellyCloud's proprietary `jellycloud.io` labels to write simple and flexible node selector rules that target exactly the cloud, location or evevn an instance your workload needs. See the [Configuration](/configuration) page for the full list of available labels and examples.
+Each Jelly Virtual Node is labeled with the architecture and instance type it represents. You can use these standard labels alongside JellyCloud's proprietary `jellycloud.io` labels to write simple and flexible node selector rules that target exactly the cloud, location or even an instance your workload needs. See the [Policies](/policies) page for the full list of available labels and examples.
 
+## Viewing remote nodes
 
+While Jelly Virtual Nodes are what Kubernetes sees, you can inspect the actual remote instances behind them in the Console. Navigate to the <ConsoleLink path="/nodes">Nodes</ConsoleLink> page to see detailed information about all connected remote nodes, including their locations, hardware specifications, status. You can also perform actions on those nodes

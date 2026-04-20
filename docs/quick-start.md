@@ -111,7 +111,7 @@ You can connect any number of Kubernetes clusters to JellyCloud. All of them sha
 
 - **[Core Concepts](/core-concepts):** Understand workloads, networking, and storage primitives
 - **[Supported Platforms](/supported-platforms):** See which cloud providers and runtimes are supported
-- **[Configuration](/configuration):** Master `jelly.yaml` and environment settings
+- **[Policies](/policies):** Fine-tune workload placement and node selection rules
 - **[AI Serving](/ai-serving):** Deploy LLMs and ML models with GPU-aware scheduling
 - **[jelly-bites](https://github.com/jellycloud-io/jelly-bites):** Ready-to-run sample applications
 - **[Support](/support):** Contact the JellyCloud team

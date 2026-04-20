@@ -130,7 +130,7 @@ const config: Config = {
             {label: 'Supported Platforms', to: '/supported-platforms'},
             {label: 'Cloud Providers', to: '/cloud-providers/'},
             {label: 'AI Serving', to: '/ai-serving'},
-            {label: 'Configuration', to: '/configuration'},
+            {label: 'Policies', to: '/policies'},
           ],
         },
         {

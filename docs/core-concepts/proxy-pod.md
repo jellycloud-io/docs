@@ -1,10 +1,10 @@
 ---
-id: index
-title: Configuration
-sidebar_position: 1
+id: proxy-pod
+title: Proxy Pod
+sidebar_position: 4
 ---
 
-# Configuration
+# Proxy Pod
 
 :::caution Coming soon
 This section is under construction.

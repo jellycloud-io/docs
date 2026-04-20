@@ -35,12 +35,14 @@ const sidebars: SidebarsConfig = {
       items: [
         'core-concepts/architecture',
         'core-concepts/jelly-nodes',
+        'core-concepts/proxy-pod',
+        'core-concepts/persistent-volumes',
       ],
     },
     {
       type: 'doc',
-      id: 'configuration/index',
-      label: 'Configuration',
+      id: 'policies/index',
+      label: 'Policies',
     },
     {
       type: 'doc',
