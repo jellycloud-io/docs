@@ -18,4 +18,4 @@ Connect your Lambda Labs account to JellyCloud using an API key.
 
 ### 2. Add to JellyCloud
 
-In the Console, go to **Cloud Providers → Add Provider**, select **Lambda Labs**, and paste your API key.
+In the Console, navigate to the **Providers** page, select **Lambda Labs**, and click **Apply**. Paste your API key and click **Continue**. JellyCloud will validate the credentials before storing them in a secured secret manager.
