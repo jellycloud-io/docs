@@ -57,4 +57,4 @@ The file `credentials.json` is now ready to upload to JellyCloud.
 
 ### Add to JellyCloud
 
-In the Console, go to **Cloud Providers → Add Provider**, select **Google Cloud**, and upload the JSON key file.
+In the Console, navigate to the **Providers** page, select **Google Cloud**, and click **Apply**. Upload the JSON key file and click **Continue**. JellyCloud will validate the credentials before storing them in a secured secret manager.

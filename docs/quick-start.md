@@ -23,6 +23,12 @@ Fill in the sign-up form and click **Create Account**.
 
 JellyCloud will send a confirmation code to your email. Enter it to activate your account. Once your account is activated, you will be redirected to the Console and are ready to connect your infrastructure.
 
+### Enable MFA (recommended for production)
+
+JellyCloud supports optional multi-factor authentication using an authenticator app or email verification. MFA is not required, but it is strongly recommended for any account running production workloads.
+
+You can enable it at any time in **Settings** within the Console.
+
 ## 2. Add instances (aka Nodes)
 
 To run your workloads, you need to connect instances. Navigate to the <ConsoleLink path="/node-pools">NodePools</ConsoleLink> page in the Console. You have two options for connecting compute:
