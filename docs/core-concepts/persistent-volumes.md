@@ -86,6 +86,34 @@ Because a static PVC references a PV that already exists locally in the cluster,
 Support for data replication based on user intent — enabling static PVC workloads to run on JellyCloud nodes — is planned and will be documented here when available.
 :::
 
+## PVC Passthrough (self-hosted nodes)
+
+PVC passthrough lets workloads running on self-hosted nodes use storage that is physically attached to that node — for example, a locally mounted disk or NFS share that you have already set up on the machine.
+
+By default, JellyCloud does not interact with volumes on self-hosted nodes. To opt in, add the following annotation to your `PersistentVolumeClaim`:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-data
+  annotations:
+    volume.jellycloud.io/passthrough: "true"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 50Gi
+```
+
+When JellyCloud detects this annotation, it passes the volume reference directly to the node agent without attempting to provision or migrate the storage. The volume must already exist on the node where the pod is scheduled.
+
+:::caution Storage must be present on the node
+If the annotated volume is not available on the target node, the node agent will reject the pod. The rejection propagates back to the cluster as a pod scheduling failure. Make sure the volume is mounted and accessible on every node where the workload may be placed, or use a node selector or affinity rule to pin the workload to the correct node.
+:::
+
 ## Object Storage
 
 Object storage is accessed via SDK rather than mounted as a filesystem. The AWS S3 SDK is the most common example, but the same pattern applies to other providers such as GCS or Azure Blob Storage.
