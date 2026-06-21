@@ -23,4 +23,4 @@ If you need to rotate your credentials, click **Regenerate** next to the key. Th
 
 ### 2. Add to JellyCloud
 
-In the Console, go to **Cloud Providers**, click **Add Provider**, select **Civo**, and paste your API key.
+In the Console, navigate to the **Providers** page, select **Civo**, and click **Connect**. Paste your API key and click **Apply**. JellyCloud will validate the credentials before storing them in a secured secret manager.

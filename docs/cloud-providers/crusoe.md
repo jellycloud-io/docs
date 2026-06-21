@@ -25,4 +25,4 @@ The secret key is only shown once. Save it somewhere secure before leaving the p
 
 ### 2. Add to JellyCloud
 
-In the Console, go to **Cloud Providers**, click **Add Provider**, select **Crusoe**, and enter your Access key and Secret key.
+In the Console, navigate to the **Providers** page, select **Crusoe**, and click **Connect**. Enter your Project, Access Key, and Secret Key, then click **Apply**. JellyCloud will validate the credentials before storing them in a secured secret manager.

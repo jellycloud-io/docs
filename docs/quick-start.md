@@ -23,15 +23,21 @@ Fill in the sign-up form and click **Create Account**.
 
 JellyCloud will send a confirmation code to your email. Enter it to activate your account. Once your account is activated, you will be redirected to the Console and are ready to connect your infrastructure.
 
+### Enable MFA (recommended for production)
+
+JellyCloud supports optional multi-factor authentication using an authenticator app or email verification. MFA is not required, but it is strongly recommended for any account running production workloads.
+
+You can enable it at any time in **Settings** within the Console.
+
 ## 2. Add instances (aka Nodes)
 
-To run your workloads, you need to connect instances. Navigate to the <ConsoleLink path="/node-pools">NodePools</ConsoleLink> page in the Console. You have two options for connecting compute:
+To run your workloads, you need to connect instances. Use the **Add** button in the top-right corner to connect compute. You have two options:
 
 ### Self-Install
 
 Self-install is the right option when you have existing compute that you want to bring into JellyCloud. This includes on-premises servers, existing cloud VMs, or any cloud provider not yet natively supported by JellyCloud.
 
-To get the installation link, click the **Node** button in the top-right corner of the Console. Copy the generated link and run it on the target machine. JellyCloud will install the required agent and register the instance automatically.
+To get the installation link, click **Add** in the top-right corner and select **Add Node**. Copy the generated link and run it on the target machine. JellyCloud will install the required agent and register the instance automatically.
 
 If you plan to use the link as a VM startup script or a cloud-init script, prepend `#!/bin/bash` before the link so the shell interprets it correctly:
 
@@ -54,11 +60,19 @@ Node Pools let JellyCloud automatically provision and scale compute on your beha
 
 To create a Node Pool:
 
-1. Click **Add NodePool** in the top-right corner of the Console.
-2. Select the cloud account you want to provision into. If the account is not yet connected, you will be prompted to provide connection details at this step. See the [Cloud Providers](/cloud-providers) section for provider-specific instructions.
-3. Choose the workload type for this Node Pool: **GPU** for GPU-accelerated workloads, or **General Compute** for CPU-based workloads.
-4. Under **Advanced Settings**, a default OS image is pre-selected for you. If you need to use a custom image, enter it here.
-5. Review and accept the Terms and Conditions, then click **Create NodePool**.
+1. Click **Add** in the top-right corner and select **Add NodePool**.
+2. Select the cloud you want to provision into. If the cloud is not yet connected, you will be prompted to provide connection details at this step. See the [Cloud Providers](/cloud-providers) section for provider-specific instructions.
+3. Choose the workload type: **GPU** for GPU-accelerated workloads, or **General Compute** for CPU-based workloads.
+4. Select the machine configuration:
+   - **General Compute:** choose a machine family, then select the specific machine size.
+   - **GPU:** choose the GPU model, then select the instance with the number of GPU slots you need.
+5. Select the OS image. A default is pre-selected based on your workload type: Ubuntu 24.04 and up for General Compute nodes, and an Ubuntu image with CUDA drivers for GPU nodes. You can change this from the list of images supported by your chosen cloud provider.
+
+   :::tip GPU startup time
+   For GPU-accelerated nodes, choose an OS image that includes GPU drivers. Pre-installed drivers eliminate driver setup on first boot and reduce node startup time.
+   :::
+
+6. Review and accept the Terms and Conditions, then click **Create NodePool**.
 
 ## 3. Connect a Cluster
 
@@ -70,7 +84,7 @@ With your instances connected, you're ready to extend your Kubernetes cluster to
 You can connect any number of Kubernetes clusters to JellyCloud. All of them share the same pool of connected instances. Workloads across clusters remain fully isolated from one another.
 :::
 
-1. In the Console, go to the <ConsoleLink path="/node-pools">NodePools</ConsoleLink> page and click **Connect Cluster**. JellyCloud will generate a Helm command with an auto-generated secret unique to your tenant.
+1. In the Console, click **Add** in the top-right corner, and select **Add Cluster**. JellyCloud will generate a Helm command with an auto-generated secret unique to your tenant.
 
 
    :::warning Keep your Helm command private

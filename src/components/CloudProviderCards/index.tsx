@@ -52,6 +52,16 @@ const providers: CloudProvider[] = [
     href: './crusoe',
     badges: ['GPU Specialized', 'High Performance'],
   },
+  {
+    id: 'hetzner',
+    displayName: 'Hetzner',
+    description:
+      'German cloud provider offering excellent price-to-performance ratio with reliable infrastructure. Popular in Europe for cost-effective hosting solutions.',
+    logo: 'https://www.hetzner.com/favicon.ico',
+    color: '#d50c2d',
+    href: './hetzner',
+    badges: ['General Compute', 'Cost Effective', 'High Performance'],
+  },
 ];
 
 export default function CloudProviderCards(): JSX.Element {
