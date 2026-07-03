@@ -86,6 +86,20 @@ helm upgrade jelly-namespaced-rbac <chart> \
   -n jelly
 ```
 
+### Step 3: Restart JellyCloud components
+
+After completing the above steps, restart the JellyCloud deployments in the `jelly` namespace so they pick up the new RBAC configuration:
+
+```bash
+kubectl rollout restart deployment --namespace jelly
+```
+
+Wait for all deployments to finish rolling out before scheduling workloads:
+
+```bash
+kubectl rollout status deployment --namespace jelly
+```
+
 ### Behavior for unlisted namespaces
 
 Workloads in namespaces that are not whitelisted are silently skipped. They do not appear in the JellyCloud Console, are not considered for scheduling on JellyCloud nodes, and are not affected in any way by the operator.
