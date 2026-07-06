@@ -88,31 +88,79 @@ Support for data replication based on user intent — enabling static PVC worklo
 
 ## PVC Passthrough (self-hosted nodes)
 
-PVC passthrough lets workloads running on self-hosted nodes use storage that is physically attached to that node — for example, a locally mounted disk or NFS share that you have already set up on the machine.
+PVC passthrough lets workloads running on self-hosted nodes use storage that is physically attached to the machine — for example, a locally mounted disk or NFS share you have already set up. JellyCloud ensures that the volume defined in the workload is mounted to the storage on the self-hosted node.
 
-By default, JellyCloud does not interact with volumes on self-hosted nodes. To opt in, add the following annotation to your `PersistentVolumeClaim`:
+### How it works
+
+The passthrough annotation goes on the **pod template** of your `Deployment` or `StatefulSet`. The annotation value is a JSON object that maps each volume name (as declared in `spec.template.spec.volumes`) to the physical path where that storage is mounted on the self-hosted machine.
 
 ```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: local-data
-  annotations:
-    volume.jellycloud.io/passthrough: "true"
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: ""
-  resources:
-    requests:
-      storage: 50Gi
+volume.jellycloud.io/passthrough: '{"<volume-name>": {"path": "<host-path>"}}'
 ```
 
-When JellyCloud detects this annotation, it passes the volume reference directly to the node agent without attempting to provision or migrate the storage. The volume must already exist on the node where the pod is scheduled.
+### Single volume example
 
-:::caution Storage must be present on the node
-If the annotated volume is not available on the target node, the node agent will reject the pod. The rejection propagates back to the cluster as a pod scheduling failure. Make sure the volume is mounted and accessible on every node where the workload may be placed, or use a node selector or affinity rule to pin the workload to the correct node.
-:::
+In this example, the volume `data-volume` is mounted at `/mnt/data` on the self-hosted node:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-processor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-processor
+  template:
+    metadata:
+      labels:
+        app: data-processor
+      annotations:
+        volume.jellycloud.io/passthrough: '{"data-volume": {"path": "/mnt/data"}}'
+    spec:
+      containers:
+        - name: processor
+          image: my-image:latest
+          volumeMounts:
+            - name: data-volume
+              mountPath: /data
+      volumes:
+        - name: data-volume
+          hostPath:
+            path: /mnt/data
+```
+
+### Multiple volumes example
+
+List all passthrough volumes in the same JSON object, one entry per volume:
+
+```yaml
+annotations:
+  volume.jellycloud.io/passthrough: |
+    {
+      "model-weights": {"path": "/mnt/models"},
+      "scratch-disk":  {"path": "/mnt/scratch"}
+    }
+```
+
+The corresponding `volumes` section must declare each named volume:
+
+```yaml
+volumes:
+  - name: model-weights
+    hostPath:
+      path: /mnt/models
+  - name: scratch-disk
+    hostPath:
+      path: /mnt/scratch
+```
+
+### Storage must be present on every eligible node
+
+The physical path specified in the annotation must be mounted and accessible on **every self-hosted node that the workload could be scheduled to**. JellyCloud does not provision or verify the storage — it only passes the reference through. If the path is absent on the target node, the node agent rejects the pod and the failure propagates back to the cluster as a scheduling error.
+
+To avoid this, either ensure the path exists on all candidate nodes, or use node selectors or affinity rules to pin the workload to the specific nodes where the storage is present.
 
 ## Object Storage
 
