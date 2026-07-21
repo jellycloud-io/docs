@@ -162,6 +162,23 @@ The physical path specified in the annotation must be mounted and accessible on 
 
 To avoid this, either ensure the path exists on all candidate nodes, or use node selectors or affinity rules to pin the workload to the specific nodes where the storage is present.
 
+## Shared PVC across pods and replicas
+
+When multiple pods or replicas reference the same PVC, JellyCloud ensures they all run on the same cloud provider and region as the node where the PVC was first created. Because a PVC can only be bound to a single physical location, all pods that share it must be co-located — JellyCloud enforces this automatically for the initial pod and applies the same placement constraint to every subsequent replica or pod that references the same claim.
+
+By default, JellyCloud uses a **preferred** placement strategy: if a JellyCloud node is available in the required location, the workload is placed there; otherwise it can fall back to non-JellyCloud nodes. If you need to guarantee that all pods run exclusively on JellyCloud nodes and never fall back, add the following annotation to your pod template:
+
+```yaml
+annotations:
+  volume.jellycloud.io/shared-storage: required
+```
+
+With `required`, if JellyCloud cannot place a pod on a JellyCloud node in the correct location, the pod remains unscheduled rather than falling back to a different environment. This prevents any replica from silently running outside the location where the PVC is bound.
+
+## Block device volumes
+
+Kubernetes supports block devices as local volumes (`volumeMode: Block`). JellyCloud now passes these through to the node agent without rejection. No additional configuration is needed — use standard Kubernetes block volume definitions and JellyCloud will handle them alongside file-based volumes.
+
 ## Object Storage
 
 Object storage is accessed via SDK rather than mounted as a filesystem. The AWS S3 SDK is the most common example, but the same pattern applies to other providers such as GCS or Azure Blob Storage.

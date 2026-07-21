@@ -40,6 +40,22 @@ You can connect any number of Kubernetes clusters to JellyCloud. All of them sha
 
 4. Your cluster is now ready. Run any standard Kubernetes `Deployment` or `StatefulSet` and JellyCloud will schedule it across your connected nodes and cloud providers. No changes to your manifests are required.
 
+## Deployment methods
+
+JellyCloud supports two ways to install the Operator into your cluster.
+
+### Automated (Supervisor)
+
+The default path. The Helm command generated in the Console installs the JellyCloud Supervisor, which manages the lifecycle of all Operator components automatically, including upgrades.
+
+This is the recommended approach for most teams.
+
+### Manual (Helm / ArgoCD / CI pipelines)
+
+If your organization manages cluster tooling through GitOps, ArgoCD, or internal CI pipelines, you can deploy JellyCloud components manually using the individual Helm chart links exposed in the Console under **Settings**. This lets you version-control the deployment, apply your own values overrides, and integrate JellyCloud into your existing release process.
+
+Both methods support all access modes described below.
+
 ## Access modes
 
 When connecting a cluster, you choose the RBAC scope the Operator is granted. This controls which namespaces JellyCloud can observe and schedule workloads into.

@@ -27,6 +27,8 @@ const sidebars: SidebarsConfig = {
         'cloud-providers/lambda-labs',
         'cloud-providers/crusoe',
         'cloud-providers/hetzner',
+        'cloud-providers/azure',
+        'cloud-providers/digitalocean',
       ],
     },
     {
