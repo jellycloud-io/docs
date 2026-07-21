@@ -16,9 +16,10 @@ Start by signing up for a JellyCloud account through the Console.
 
 Fill in the sign-up form and click **Create Account**.
 
-:::tip Two fields worth noting
+:::tip Fields worth noting
 - **Tenant name:** a tenant corresponds to a cloud account. If you operate multiple tenants (e.g. dev and prod), each gets its own name.
 - **Tenant color:** a visual label to help distinguish between tenants at a glance, handy when you're working across more than one account.
+- **Country:** select the country where your organization is based. This is used for billing and compliance purposes.
 :::
 
 JellyCloud will send a confirmation code to your email. Enter it to activate your account. Once your account is activated, you will be redirected to the Console and are ready to connect your infrastructure.
@@ -61,18 +62,26 @@ Node Pools let JellyCloud automatically provision and scale compute on your beha
 To create a Node Pool:
 
 1. Click **Add** in the top-right corner and select **Add NodePool**.
-2. Select the cloud you want to provision into. If the cloud is not yet connected, you will be prompted to provide connection details at this step. See the [Cloud Providers](/cloud-providers) section for provider-specific instructions.
-3. Choose the workload type: **GPU** for GPU-accelerated workloads, or **General Compute** for CPU-based workloads.
-4. Select the machine configuration:
+2. Give it a name (e.g. `h100-eu-sovereign`). The name must be unique across your node pools and can be used as a node selector in workload manifests.
+3. Select the cloud provider you want to provision into. If the provider is not yet connected, you will be prompted to provide connection details at this step. See the [Cloud Providers](/cloud-providers) section for provider-specific instructions.
+4. Select the region(s): choose one or more regions and availability zones within the cloud. Order them by priority. When multiple regions or zones are selected, JellyCloud provisions new instances in that order, starting with the first region and moving to the next only when the previous one cannot fulfill the request.
+5. Choose the workload type: **GPU** for GPU-accelerated workloads, or **General Compute** for CPU-based workloads.
+6. Select the machine configuration:
    - **General Compute:** choose a machine family, then select the specific machine size.
    - **GPU:** choose the GPU model, then select the instance with the number of GPU slots you need.
-5. Select the OS image. A default is pre-selected based on your workload type: Ubuntu 24.04 and up for General Compute nodes, and an Ubuntu image with CUDA drivers for GPU nodes. You can change this from the list of images supported by your chosen cloud provider.
+7. Select the capacity type:
+   - **On-Demand:** stable, always-available capacity. Instances are not reclaimed by the provider.
+   - **Spot:** significantly lower cost, with the trade-off that instances can be reclaimed by the cloud provider. JellyCloud handles revocation automatically: when a spot instance is about to be terminated, JellyCloud drains the node and reschedules affected pods before the instance is lost.
+   - **Spot First:** JellyCloud hunts for spot availability across all selected regions. If no spot capacity is found in any region, it falls back to On-Demand automatically. This gives you the cost savings of spot when available, without sacrificing availability.
+8. Select the OS image. A default is pre-selected based on your workload type: Ubuntu 24.04 and up for General Compute nodes, and an Ubuntu image with CUDA drivers for GPU nodes. You can change this from the list of images supported by your chosen cloud provider.
 
    :::tip GPU startup time
    For GPU-accelerated nodes, choose an OS image that includes GPU drivers. Pre-installed drivers eliminate driver setup on first boot and reduce node startup time.
    :::
-
-6. Review and accept the Terms and Conditions, then click **Create NodePool**.
+   
+   :::tip Enable or disable a NodePool
+   After creation, you can enable or disable a NodePool from its card menu in the Console. Disabling a NodePool stops autoscaling for that pool. Existing nodes continue running but no new nodes will be provisioned until the pool is re-enabled.
+   :::
 
 ## 3. Connect a Cluster
 

@@ -70,6 +70,10 @@ gcloud iam service-accounts keys create credentials.json \
 
 The file `credentials.json` is now ready to upload to JellyCloud.
 
+:::note Firewall rules
+JellyCloud tests connectivity after credentials are saved. Firewall rules are only configured if the default GCP rules block the required port — in most projects no changes are needed.
+:::
+
 ### Add to JellyCloud
 
 In the Console, navigate to the **Providers** page, select **Google Cloud**, and click **Apply**. Upload the JSON key file and click **Continue**. JellyCloud will validate the credentials before storing them in a secured secret manager.
