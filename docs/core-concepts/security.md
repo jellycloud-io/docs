@@ -25,3 +25,11 @@ JellyCloud supports a selective access model where you explicitly declare which 
 This model is particularly useful for multi-tenant clusters, production environments.
 
 For configuration instructions, see [Cluster Deployment](/deployment-options/cluster-deployment#selective-rbac).
+
+## Node-to-node connectivity (S2S)
+
+By default, JellyCloud establishes secure server-to-server (S2S) connections between nodes to route traffic between your cluster and remote compute. You can control whether direct S2S communication between nodes is enabled from the Console.
+
+To change this setting, go to **Settings** in the Console and toggle **Direct Node Connectivity**. Disabling it routes all inter-node traffic through JellyCloud's relay layer, which adds latency but removes the requirement for direct network reachability between nodes. Enabling it allows nodes to communicate directly when possible, reducing latency for workloads that transfer data between nodes.
+
+The setting applies at the tenant level and takes effect for new connections. Existing connections are not interrupted immediately.

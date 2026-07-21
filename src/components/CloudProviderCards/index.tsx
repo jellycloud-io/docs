@@ -62,6 +62,26 @@ const providers: CloudProvider[] = [
     href: './hetzner',
     badges: ['General Compute', 'Cost Effective', 'High Performance'],
   },
+  {
+    id: 'azure',
+    displayName: 'Microsoft Azure',
+    description:
+      "Microsoft's enterprise cloud platform offering comprehensive compute, storage, networking, and AI services with global scale and enterprise-grade compliance.",
+    logo: 'https://azure.microsoft.com/favicon.ico',
+    color: '#0078D4',
+    href: './azure',
+    badges: ['General Compute', 'GPU', 'Enterprise'],
+  },
+  {
+    id: 'digitalocean',
+    displayName: 'DigitalOcean',
+    description:
+      'Developer-friendly cloud platform offering simple, cost-effective compute, storage, and managed Kubernetes services.',
+    logo: 'https://www.digitalocean.com/favicon.ico',
+    color: '#0080FF',
+    href: './digitalocean',
+    badges: ['General Compute', 'Cost Effective'],
+  },
 ];
 
 export default function CloudProviderCards(): JSX.Element {

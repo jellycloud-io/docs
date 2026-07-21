@@ -40,6 +40,15 @@ This family controls workload placement on Jelly Nodes - which provider, region,
 | `node-selector.jellycloud.io/accelerator` | Unified GPU model name | Restrict scheduling to nodes with the specified GPU model. |
 
 
+## Annotations
+
+In addition to labels, JellyCloud supports pod template annotations for controlling storage and volume behavior. Annotations go under `spec.template.metadata.annotations`, alongside any other pod annotations.
+
+| Annotation | Values | Description |
+|---|---|---|
+| `volume.jellycloud.io/shared-storage` | `preferred` (default), `required` | Controls placement enforcement when multiple pods share a PVC. `required` prevents any pod from falling back to a non-JellyCloud node outside the PVC's bound location. See [Shared PVC across pods and replicas](/core-concepts/persistent-volumes#shared-pvc-across-pods-and-replicas) for details. |
+| `volume.jellycloud.io/passthrough` | JSON object | Maps volume names to physical host paths on self-hosted nodes. See [PVC Passthrough](/core-concepts/persistent-volumes#pvc-passthrough-self-hosted-nodes) for details. |
+
 ## Example
 
 JellyCloud labels are placed under `spec.template.metadata.labels` in your workload manifest — the same location as any other pod label. This is distinct from `metadata.labels` at the top level, which labels the Deployment object itself.
