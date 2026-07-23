@@ -56,14 +56,15 @@ Selective mode restricts JellyCloud to a declared set of namespaces. The operato
 
 This mode is intended for multi-tenant clusters and environments with strict namespace isolation requirements.
 
-### Step 1: Install with namespaced mode enabled
+### Step 1: Install the Supervisor with namespaced mode enabled
 
-Add `--set security.namespaced=true` to your Helm install or upgrade command:
+Run the standard Supervisor install command from the Console, adding `--set security.namespaced=true`:
 
 ```bash
-helm install jelly-supervisor <chart> \
-  --set security.namespaced=true \
-  -n jelly
+helm upgrade --install jellycloud oci://registry-1.docker.io/jellycloud/supervisor \
+  --set apiKey=<your-api-key> \
+  --version <version> \
+  --set security.namespaced=true
 ```
 
 This replaces the cluster-wide `ClusterRoleBinding` with namespace-scoped `RoleBindings` limited to the `jelly` namespace. At this point, JellyCloud has no access to any of your workload namespaces yet.
@@ -73,31 +74,34 @@ This replaces the cluster-wide `ClusterRoleBinding` with namespace-scoped `RoleB
 Install the `namespaced-rbac` chart, passing the list of namespaces JellyCloud should manage:
 
 ```bash
-helm install jelly-namespaced-rbac <chart> \
+helm upgrade --install jelly-namespaced-rbac oci://registry-1.docker.io/jellycloud/namespaced-rbac \
+  --version <version> \
   --set namespaces="{team-a,team-b}" \
   -n jelly
 ```
 
-This creates the necessary `RoleBindings` in each listed namespace, granting JellyCloud service accounts the permissions they need to observe and schedule workloads there. To add or remove namespaces later, upgrade the release with an updated list:
+This creates the necessary `RoleBindings` in each listed namespace, granting JellyCloud service accounts the permissions they need to observe and schedule workloads there.
 
-```bash
-helm upgrade jelly-namespaced-rbac <chart> \
-  --set namespaces="{team-a,team-b,team-c}" \
-  -n jelly
-```
+:::note Namespaces must exist before running this command
+Each namespace listed must already exist in your cluster. Create any missing namespaces with `kubectl create namespace <name>` before running the command.
+:::
+
+:::warning Always list all namespaces
+Each time you run this command — whether adding or removing namespaces — you must include the **complete** list. Any namespace omitted from the list will have its `RoleBindings` removed and will no longer be accessible to JellyCloud.
+:::
 
 ### Step 3: Restart JellyCloud components
 
-After completing the above steps, restart the JellyCloud deployments in the `jelly` namespace so they pick up the new RBAC configuration:
+Restart the JellyCloud deployments in the `jelly` namespace so they pick up the new RBAC configuration:
 
 ```bash
-kubectl rollout restart deployment --namespace jelly
+kubectl rollout restart deployment -n jelly
 ```
 
 Wait for all deployments to finish rolling out before scheduling workloads:
 
 ```bash
-kubectl rollout status deployment --namespace jelly
+kubectl rollout status deployment -n jelly
 ```
 
 ### Behavior for unlisted namespaces
