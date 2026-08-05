@@ -10,13 +10,15 @@ sidebar_position: 1
 
 Connect your GCP account to JellyCloud using a service account JSON key file.
 
-JellyCloud requires permissions to manage compute instances, networking security rules, and storage on your behalf. The simplest way to grant these is with the following three predefined GCP roles:
+JellyCloud requires permissions to manage compute instances, images, networking, and storage on your behalf. Grant the following five predefined GCP roles to the service account:
 
 | Role | Role ID | Purpose |
 |---|---|---|
-| Compute Instance Admin (v1) | `roles/compute.instanceAdmin.v1` | Create and manage VM instances |
-| Compute Security Admin | `roles/compute.securityAdmin` | Manage firewall rules and security policies |
+| Compute Image User | `roles/compute.imageUser` | Read and use image resources |
+| Compute Instance Admin (v1) | `roles/compute.instanceAdmin.v1` | Create and manage VM instances, disks, and snapshots |
+| Compute Network User | `roles/compute.networkUser` | Use Compute Engine networking resources |
 | Compute Storage Admin | `roles/compute.storageAdmin` | Manage disks and storage resources |
+| Compute Viewer | `roles/compute.viewer` | Read-only access to Compute Engine resources |
 
 If your organization requires a custom role with more granular permissions, assign the specific permissions covered by those roles to a custom role instead.
 
@@ -27,10 +29,12 @@ If your organization requires a custom role with more granular permissions, assi
 3. Click **Create Service Account**.
 4. **Name:** e.g. `jellycloud-platform`
 5. Click **Create and Continue**.
-6. In **Grant this service account access to the project**, add all three roles:
+6. In **Grant this service account access to the project**, add all five roles:
+   - `Compute Image User` (`roles/compute.imageUser`)
    - `Compute Instance Admin (v1)` (`roles/compute.instanceAdmin.v1`)
-   - `Compute Security Admin` (`roles/compute.securityAdmin`)
+   - `Compute Network User` (`roles/compute.networkUser`)
    - `Compute Storage Admin` (`roles/compute.storageAdmin`)
+   - `Compute Viewer` (`roles/compute.viewer`)
 7. Click **Continue**, then **Done**.
 8. Click the service account you just created and go to the **Keys** tab.
 9. Click **Add Key → Create new key → JSON → Create**.
@@ -53,15 +57,23 @@ gcloud iam service-accounts create "${SA_NAME}" \
 # Grant required roles
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
   --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/compute.imageUser"
+
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:${SA_EMAIL}" \
   --role="roles/compute.instanceAdmin.v1"
 
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
   --member="serviceAccount:${SA_EMAIL}" \
-  --role="roles/compute.securityAdmin"
+  --role="roles/compute.networkUser"
 
 gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
   --member="serviceAccount:${SA_EMAIL}" \
   --role="roles/compute.storageAdmin"
+
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:${SA_EMAIL}" \
+  --role="roles/compute.viewer"
 
 # Generate and download the JSON key
 gcloud iam service-accounts keys create credentials.json \
