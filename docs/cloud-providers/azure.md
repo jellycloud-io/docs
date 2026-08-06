@@ -51,6 +51,14 @@ In the Console, navigate to the **Providers** page, select **Microsoft Azure**, 
 Run `az account show --query tenantId -o tsv` to retrieve your Tenant ID.
 :::
 
+
+:::tip Required resource providers
+The following resource providers must be registered on your subscription. They are usually registered by default but worth confirming on a fresh subscription:
+- `Microsoft.Compute`
+- `Microsoft.Network`
+- `Microsoft.Resources`
+:::
+
 ## Custom role: minimum required permissions
 
 If your organization requires a custom role instead of `Contributor`, the tables below list every individual permission JellyCloud needs and why.
@@ -98,9 +106,3 @@ Every VM gets its own NIC, VNet, subnet, and NSG provisioned by JellyCloud.
 | `Microsoft.Resources/subscriptions/resourceGroups/write` | Creating the per-region `jellycloud-{location}` resource group |
 | `Microsoft.Resources/subscriptions/resourceGroups/read` | Targeting the resource group on all subsequent calls |
 
-:::note Required resource providers
-The following resource providers must be registered on your subscription. They are usually registered by default but worth confirming on a fresh subscription:
-- `Microsoft.Compute`
-- `Microsoft.Network`
-- `Microsoft.Resources`
-:::

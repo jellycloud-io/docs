@@ -88,6 +88,12 @@ JellyCloud tests connectivity after credentials are saved. Firewall rules are on
 
 In the Console, navigate to the **Providers** page, select **Google Cloud**, and click **Apply**. Upload the JSON key file and click **Continue**. JellyCloud will validate the credentials before storing them in a secured secret manager.
 
+:::note Required APIs
+Enable the following APIs on your GCP project:
+- `compute.googleapis.com` — always required
+- `storage.googleapis.com` — required only if using the model-cache bucket feature
+:::
+
 ## Custom role: minimum required permissions
 
 If your organization requires a custom role instead of the predefined roles above, the tables below list every individual permission JellyCloud needs and why.
@@ -149,8 +155,3 @@ If your organization requires a custom role instead of the predefined roles abov
 | `storage.hmacKeys.delete` | Removing old keys |
 | `storage.hmacKeys.create` | Issuing a fresh HMAC key |
 
-:::note Required APIs
-Enable the following APIs on your GCP project:
-- `compute.googleapis.com` — always required
-- `storage.googleapis.com` — required only if using the model-cache bucket feature
-:::
