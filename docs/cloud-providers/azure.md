@@ -50,3 +50,59 @@ In the Console, navigate to the **Providers** page, select **Microsoft Azure**, 
 :::tip Finding your Tenant ID
 Run `az account show --query tenantId -o tsv` to retrieve your Tenant ID.
 :::
+
+
+:::tip Required resource providers
+The following resource providers must be registered on your subscription. They are usually registered by default but worth confirming on a fresh subscription:
+- `Microsoft.Compute`
+- `Microsoft.Network`
+- `Microsoft.Resources`
+:::
+
+## Custom role: minimum required permissions
+
+If your organization requires a custom role instead of `Contributor`, the tables below list every individual permission JellyCloud needs and why.
+
+**VM lifecycle** (`Microsoft.Compute`)
+
+| Permission | Used by |
+|---|---|
+| `Microsoft.Compute/virtualMachines/read` | Instance lookup, listing VMs, connectivity check |
+| `Microsoft.Compute/virtualMachines/write` | Creating VMs; attaching and detaching disks |
+| `Microsoft.Compute/virtualMachines/delete` | Deleting VMs |
+| `Microsoft.Compute/virtualMachines/start/action` | Starting a stopped VM |
+| `Microsoft.Compute/virtualMachines/deallocate/action` | Stopping a running VM |
+| `Microsoft.Compute/virtualMachines/instanceView/read` | Reading per-VM power state |
+| `Microsoft.Compute/disks/write` | Creating persistent volumes |
+| `Microsoft.Compute/disks/delete` | Deleting volumes and OS disk cleanup on VM deletion |
+
+**Networking — always required** (`Microsoft.Network`)
+
+Every VM gets its own NIC, VNet, subnet, and NSG provisioned by JellyCloud.
+
+| Permission | Used by |
+|---|---|
+| `Microsoft.Network/networkInterfaces/write`, `/read`, `/delete` | NIC create, IP resolution, and cleanup on VM deletion |
+| `Microsoft.Network/networkInterfaces/join/action` | Attaching the NIC to the VM |
+| `Microsoft.Network/virtualNetworks/write` | VNet creation |
+| `Microsoft.Network/virtualNetworks/subnets/write` | Subnet creation |
+| `Microsoft.Network/virtualNetworks/subnets/join/action` | Placing the NIC on the subnet |
+| `Microsoft.Network/networkSecurityGroups/write` | Creating the NSG and its rules |
+| `Microsoft.Network/networkSecurityGroups/join/action` | Attaching the NSG to the subnet |
+
+**Networking — conditional** (only when direct node connectivity is enabled)
+
+| Permission | Used by |
+|---|---|
+| `Microsoft.Network/publicIPAddresses/write` | Provisioning the VM's public IP |
+| `Microsoft.Network/publicIPAddresses/read` | IP resolution and pre-detach checks |
+| `Microsoft.Network/publicIPAddresses/delete` | Cleanup on VM deletion |
+| `Microsoft.Network/publicIPAddresses/join/action` | Associating the public IP with the NIC |
+
+**Resource management** (`Microsoft.Resources`)
+
+| Permission | Used by |
+|---|---|
+| `Microsoft.Resources/subscriptions/resourceGroups/write` | Creating the per-region `jellycloud-{location}` resource group |
+| `Microsoft.Resources/subscriptions/resourceGroups/read` | Targeting the resource group on all subsequent calls |
+
