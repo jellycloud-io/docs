@@ -20,8 +20,6 @@ JellyCloud requires permissions to manage compute instances, images, networking,
 | Compute Storage Admin | `roles/compute.storageAdmin` | Manage disks and storage resources |
 | Compute Viewer | `roles/compute.viewer` | Read-only access to Compute Engine resources |
 
-If your organization requires a custom role with more granular permissions, assign the specific permissions covered by those roles to a custom role instead.
-
 ### Option A: Google Cloud Console
 
 1. Open the [GCP Console](https://console.cloud.google.com/) and select your project.
@@ -89,3 +87,70 @@ JellyCloud tests connectivity after credentials are saved. Firewall rules are on
 ### Add to JellyCloud
 
 In the Console, navigate to the **Providers** page, select **Google Cloud**, and click **Apply**. Upload the JSON key file and click **Continue**. JellyCloud will validate the credentials before storing them in a secured secret manager.
+
+## Custom role: minimum required permissions
+
+If your organization requires a custom role instead of the predefined roles above, the tables below list every individual permission JellyCloud needs and why.
+
+**VM lifecycle**
+
+| Permission | Used by |
+|---|---|
+| `compute.instances.get` | Instance lookup before operations |
+| `compute.instances.list` | Aggregated VM listing |
+| `compute.instances.create` | Creating VM instances |
+| `compute.instances.delete` | Deleting VM instances |
+| `compute.instances.start` | Starting a stopped instance |
+| `compute.instances.stop` | Stopping a running instance |
+| `compute.instances.attachDisk` | Attaching a volume to an instance |
+| `compute.instances.detachDisk` | Detaching a volume from an instance |
+
+**Disks**
+
+| Permission | Used by |
+|---|---|
+| `compute.disks.create` | Creating persistent volumes |
+| `compute.disks.delete` | Deleting persistent volumes |
+| `compute.disks.use` | Attaching a disk to an instance |
+| `compute.disks.get` | Polling disk status during attach and create |
+
+**Images, networking, and GPU**
+
+| Permission | Used by |
+|---|---|
+| `compute.images.useReadOnly` | Boot disk sourced from public images (e.g. `ubuntu-os-cloud`, `debian-cloud`) — satisfied automatically for public images |
+| `compute.networks.get`, `compute.networks.use` | Placing VMs on the project network |
+| `compute.subnetworks.use` | Placing VMs on a subnetwork |
+| `compute.acceleratorTypes.get` | GPU VMs only |
+
+**Firewall** (conditional — only required when direct node connectivity is enabled)
+
+| Permission | Used by |
+|---|---|
+| `compute.firewalls.get` | Checking whether the required firewall rule already exists |
+| `compute.firewalls.create` | Creating the rule if it is missing |
+
+**Zones, regions, and operations**
+
+| Permission | Used by |
+|---|---|
+| `compute.regions.list` | Connectivity check during credential validation |
+| `compute.zoneOperations.get` | Polling zonal operations (create, delete, attach, detach, start, stop) |
+| `compute.regionOperations.get` | Polling regional operations |
+| `compute.globalOperations.get` | Polling the firewall-create operation |
+
+**Cloud Storage** (conditional — only required when the model-cache bucket feature is enabled)
+
+| Permission | Used by |
+|---|---|
+| `storage.buckets.create` | Creating the model cache bucket |
+| `storage.hmacKeys.list` | Listing existing HMAC keys before rotation |
+| `storage.hmacKeys.update` | Deactivating old keys |
+| `storage.hmacKeys.delete` | Removing old keys |
+| `storage.hmacKeys.create` | Issuing a fresh HMAC key |
+
+:::note Required APIs
+Enable the following APIs on your GCP project:
+- `compute.googleapis.com` — always required
+- `storage.googleapis.com` — required only if using the model-cache bucket feature
+:::
