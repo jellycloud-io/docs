@@ -40,6 +40,27 @@ This family controls workload placement on Jelly Nodes - which provider, region,
 | `node-selector.jellycloud.io/accelerator` | Unified GPU model name | Restrict scheduling to nodes with the specified GPU model. |
 
 
+## Namespace-level policies
+
+Policy labels can be applied directly to a Kubernetes namespace. When JellyCloud sees a label on a namespace, it treats it as a default for every workload in that namespace — no changes to individual pod manifests required.
+
+Labels in scope for namespace-level policy:
+- `node-selector.jellycloud.io/provider`
+- `node-selector.jellycloud.io/region`
+
+Apply a label to a namespace with `kubectl`:
+
+```bash
+kubectl label namespace team-a node-selector.jellycloud.io/provider=GCP
+kubectl label namespace team-a node-selector.jellycloud.io/region=us-east1
+```
+
+From that point on, every workload deployed into `team-a` is automatically targeted to the labeled provider and region, without any changes to the workload manifests.
+
+**Precedence:** if a pod's own labels include the same key, the pod-level label wins. Namespace labels are applied only when the pod has no label for that key.
+
+This is especially useful in multi-tenant clusters where each namespace belongs to a team or customer and should always run on a designated location.
+
 ## Annotations
 
 In addition to labels, JellyCloud supports pod template annotations for controlling storage and volume behavior. Annotations go under `spec.template.metadata.annotations`, alongside any other pod annotations.

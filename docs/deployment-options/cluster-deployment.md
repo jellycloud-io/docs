@@ -123,3 +123,21 @@ kubectl rollout status deployment -n jelly
 ### Behavior for unlisted namespaces
 
 Workloads in namespaces that are not whitelisted are silently skipped. They do not appear in the JellyCloud Console, are not considered for scheduling on JellyCloud nodes, and are not affected in any way by the operator.
+
+## Disconnecting a cluster
+
+To disconnect a cluster, go to the **Clusters** page in the Console, open the cluster menu, and select **Disconnect**.
+
+On disconnect, JellyCloud cleans up the following resources from the cluster:
+
+- Running workloads managed by the Operator
+- JellyCloud controllers and services
+- Internal messages and cache
+
+**Persistent Volumes are not deleted.** JellyCloud-managed PVCs and their underlying volumes are explicitly excluded from the disconnect cleanup. Data is preserved. If the cluster never reconnects, JellyCloud's source-of-truth system will clean up orphaned volumes after a 24-hour window.
+
+To fully remove the JellyCloud Operator from the cluster after disconnecting:
+
+```bash
+helm uninstall jellycloud -n jelly
+```
