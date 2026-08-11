@@ -179,14 +179,6 @@ With `required`, if JellyCloud cannot place a pod on a JellyCloud node in the co
 
 Kubernetes supports block devices as local volumes (`volumeMode: Block`). JellyCloud now passes these through to the node agent without rejection. No additional configuration is needed — use standard Kubernetes block volume definitions and JellyCloud will handle them alongside file-based volumes.
 
-## Volume lifecycle on cluster disconnect
-
-When a cluster is disconnected from JellyCloud, the Operator cleans up workloads, controllers, services, and internal state. Persistent Volumes are explicitly excluded from this cleanup.
-
-JellyCloud-managed volumes are not deleted when the cluster disconnects. They are retained and remain accessible to the cluster. If the cluster is permanently disconnected and never reconnects, JellyCloud's source-of-truth system will clean up the orphaned volumes after a 24-hour window.
-
-This means you can safely disconnect and reconnect a cluster without losing data attached to PVCs managed by JellyCloud.
-
 ## Object Storage
 
 Object storage is accessed via SDK rather than mounted as a filesystem. The AWS S3 SDK is the most common example, but the same pattern applies to other providers such as GCS or Azure Blob Storage.
