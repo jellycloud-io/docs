@@ -8,6 +8,12 @@ sidebar_position: 2
 
 Connecting a cluster installs the JellyCloud Operator, which bridges your Kubernetes control plane with JellyCloud-managed infrastructure. Once connected, you choose how broadly the Operator can interact with your workloads: cluster-wide (seamless) or restricted to specific namespaces (selective).
 
+**On this page:**
+- [Connect your cluster](#connect-your-cluster)
+- [Deployment methods](#deployment-methods)
+- [Access modes](#access-modes) — [Seamless](#seamless-mode-default) · [Selective](#selective-mode-namespace-scoped-rbac)
+- [Disconnecting a cluster](#disconnecting-a-cluster)
+
 ## Connect your cluster
 
 **Requirements:** Your cluster needs at least one node with **2 vCPUs** and **4 GB memory** available to run the JellyCloud Operator. No network or firewall configuration is required.
@@ -123,3 +129,14 @@ kubectl rollout status deployment -n jelly
 ### Behavior for unlisted namespaces
 
 Workloads in namespaces that are not whitelisted are silently skipped. They do not appear in the JellyCloud Console, are not considered for scheduling on JellyCloud nodes, and are not affected in any way by the operator.
+
+## Disconnecting a cluster
+
+To disconnect a cluster run the below helm command
+
+```bash
+helm uninstall jellycloud 
+```
+
+Upon cluster disconnect, all meta-data is purged, running workloads are stopped.
+
