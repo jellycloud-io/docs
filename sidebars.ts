@@ -50,6 +50,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'deployment-options/cluster-deployment',
         'deployment-options/gke',
+        'deployment-options/aks',
         'policies/index',
       ],
     },
