@@ -6,7 +6,7 @@ sidebar_position: 3
 
 # GKE
 
-This page covers configuration specific to running JellyCloud on Google Kubernetes Engine (GKE).
+This page covers configuration specific to running JellyCloud on Google Kubernetes Engine (GKE). Before following these steps, complete the standard cluster setup described in [Cluster Deployment](/deployment-options/cluster-deployment).
 
 ## Artifact Registry image pull
 
