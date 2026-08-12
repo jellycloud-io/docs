@@ -21,7 +21,7 @@ The following Linux distributions are supported for connecting existing machines
 | **Linux Distro** | **Versions** | **Arch** |
 |---|---|---|
 | Debian | 12 (Bookworm), 13 (Trixie) | AMD64 |
-| Ubuntu | 24.04 LTS (Noble Numbat), 22.04 LTS (Jammy Jellyfish) | AMD64, ARM64 |
+| Ubuntu | 24.04 LTS (Noble Numbat) | AMD64, ARM64 |
 | Rocky Linux | 10 | AMD64 |
 | CentOS | 9 Stream, 10 Stream | AMD64 |
 | AlmaLinux | 10 | AMD64 |
