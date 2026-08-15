@@ -10,6 +10,8 @@ JellyCloud orchestrates workload placement automatically, using built-in algorit
 
 For teams that need more control, Policies let you fine-tune how JellyCloud selects and places workloads across nodes. Policies are expressed as labels on your workload manifests - no new API to learn.
 
+Labels can be applied at the **pod**, **namespace**, or **cluster** level. Pod-level labels always take precedence.
+
 JellyCloud defines two families of labels:
 
 - `schedule.jellycloud.io` - controls whether and how JellyCloud's scheduler is involved
@@ -21,24 +23,45 @@ This family drives in-cluster scheduler decisions related to JellyCloud function
 
 | Label | Values | Description |
 |---|---|---|
-| `schedule.jellycloud.io/allow` | `true` (default), `false` | Set to `false` to block a workload from JellyCloud scheduling entirely. |
-| `schedule.jellycloud.io` | `preferred` (default), `required` | `required` forces the workload onto a Jelly node. `preferred` allows it to fall back to non-Jelly nodes. |
-| `schedule.jellycloud.io/autoscaler` | `true` (default), `false` | Set to `false` to restrict scheduling to already-available resources, without triggering autoscaling. |
+| `schedule.jellycloud.io/mode` | `forbidden` \| `allowed` (default) \| `required` | **`forbidden`:** pods will not be scheduled on JellyCloud nodes. **`allowed`:** pods are scheduled on JellyCloud or regular nodes depending on priority. **`required`:** pods are scheduled only on JellyCloud nodes. |
+| `schedule.jellycloud.io/priority` | `first` (default) \| `last` | Scheduling priority when mode is `allowed`. **`first`:** JellyCloud nodes are preferred. **`last`:** JellyCloud nodes are used only if no regular node is available. |
+| `schedule.jellycloud.io/autoscaler` | `forbidden` \| `undesirable` \| `allowed` (default) | **`forbidden`:** pod will not run on a node that requires autoscaling. **`undesirable`:** autoscaling nodes are used only if no already-available node exists. **`allowed`:** pod may run on a node that requires autoscaling. |
 
 ## `node-selector.jellycloud.io`
 
-This family controls workload placement on Jelly Nodes - which provider, region, pool, or individual node a workload lands on, and how the scheduler balances across them.
+This family controls workload placement on Jelly Nodes - which provider, region, pool, or individual node a workload lands on.
 
 | Label | Values | Description |
 |---|---|---|
+| `node-selector.jellycloud.io/provider` | Cloud provider name | Restrict scheduling to the given cloud provider. |
+| `node-selector.jellycloud.io/region` | Region name | Restrict scheduling to nodes in the specified region. |
+| `node-selector.jellycloud.io/node-pool` | Node pool name | Restrict scheduling to nodes belonging to the specified node pool. |
 | `node-selector.jellycloud.io/node-id` | Specific node ID | Schedule only on the specified node. |
 | `node-selector.jellycloud.io/node-name` | Specific node name | Schedule only on the named static node. |
-| `node-selector.jellycloud.io/node-pool` | Node pool name | Restrict scheduling to nodes belonging to the specified node pool. |
-| `node-selector.jellycloud.io/provider` | Cloud provider name | Restrict scheduling to the given cloud provider. |
-| `node-selector.jellycloud.io/region` | Region name | Restrict scheduling to nodes in the specified region of the specific provider. |
-| `node-selector.jellycloud.io/category` | Node category | Restrict scheduling to nodes with the specified category. |
-| `node-selector.jellycloud.io/accelerator` | Unified GPU model name | Restrict scheduling to nodes with the specified GPU model. |
+| `node-selector.jellycloud.io/accelerator` | GPU model name | Restrict scheduling to nodes with the specified GPU model. |
 
+## Namespace-level policies
+
+Policy labels can be applied directly to a Kubernetes namespace. When JellyCloud sees a label on a namespace, it treats it as a default for every workload in that namespace — no changes to individual pod manifests required.
+
+Labels in scope for namespace-level policy:
+- `schedule.jellycloud.io/mode`
+- `schedule.jellycloud.io/priority`
+- `node-selector.jellycloud.io/provider`
+- `node-selector.jellycloud.io/region`
+
+Apply labels to a namespace with `kubectl`:
+
+```bash
+kubectl label namespace team-a node-selector.jellycloud.io/provider=GCP
+kubectl label namespace team-a node-selector.jellycloud.io/region=us-east1
+```
+
+From that point on, every workload deployed into `team-a` is automatically targeted to the labeled provider and region, without any changes to the workload manifests.
+
+**Precedence:** if a pod's own labels include the same key, the pod-level label wins. Namespace labels are applied only when the pod has no label for that key.
+
+This is especially useful in multi-tenant clusters where each namespace belongs to a team or customer and should always run on a designated location.
 
 ## Annotations
 
@@ -70,8 +93,11 @@ spec:
         app: loadjob
         # JellyCloud policy labels go here, alongside your existing pod labels
 
-        # Uncomment to block JellyCloud scheduling for this workload:
-        # schedule.jellycloud.io/allow: "false"
+        # Require JellyCloud-only scheduling:
+        # schedule.jellycloud.io/mode: "required"
+
+        # Prevent JellyCloud scheduling for this workload:
+        # schedule.jellycloud.io/mode: "forbidden"
 
         # Uncomment to target a specific provider:
         # node-selector.jellycloud.io/provider: "Crusoe"
