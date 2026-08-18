@@ -10,9 +10,35 @@ JellyCloud orchestrates workload placement automatically, using built-in algorit
 
 For teams that need more control, Policies let you fine-tune how JellyCloud selects and places workloads across nodes. Policies are expressed as labels on your workload manifests - no new API to learn.
 
-Labels can be applied at the **pod**, **namespace**, or **cluster** level. Pod-level labels always take precedence.
+## Mode of operation
 
-JellyCloud defines two families of labels:
+The mode of operation controls whether JellyCloud schedules workloads by default or only when explicitly instructed. It can be configured at three levels, each overriding the one above:
+
+1. **Cluster level:** applies to all workloads across the cluster unless overridden
+2. **Namespace level:** overrides the cluster-level setting for all workloads in that namespace
+3. **Deployment level:** overrides namespace and cluster settings for that specific workload (Deployment, StatefulSet, or Job)
+
+The two cluster-level modes are:
+
+- **`allowed` (default):** JellyCloud attempts to schedule any workload in the cluster. To exclude specific workloads or namespaces, set `schedule.jellycloud.io/mode: forbidden` at the namespace or deployment level.
+- **`forbidden`:** JellyCloud does not schedule any workload by default. Only workloads or namespaces explicitly labeled `schedule.jellycloud.io/mode: allowed` or `required` will be scheduled on JellyCloud nodes.
+
+### Configure cluster-level mode
+
+Confirm the JellyCloud Operator is deployed and all pods in the `jelly` namespace are in `Running` state, then run:
+
+```bash
+kubectl patch clusterconfig.controller.jellycloud.io cluster-config --type merge \
+  --patch '{"spec": {"scheduling": {"mode": "allowed"}}}'
+```
+
+Replace `allowed` with `forbidden` to switch modes.
+
+:::note
+`allowed` is the default mode. You only need to run this command to switch to `forbidden`, or to revert back to `allowed` after previously setting `forbidden`.
+:::
+
+JellyCloud defines two families of labels for workload- and namespace-level overrides:
 
 - `schedule.jellycloud.io` - controls whether and how JellyCloud's scheduler is involved
 - `node-selector.jellycloud.io` - fine-tunes which remote nodes a workload is placed on

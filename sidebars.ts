@@ -49,8 +49,6 @@ const sidebars: SidebarsConfig = {
       link: {type: 'doc', id: 'deployment-options/index'},
       items: [
         'deployment-options/cluster-deployment',
-        'deployment-options/gke',
-        'deployment-options/aks',
         'policies/index',
       ],
     },
