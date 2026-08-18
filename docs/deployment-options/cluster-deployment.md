@@ -12,6 +12,8 @@ Connecting a cluster installs the JellyCloud Operator, which bridges your Kubern
 - [Connect your cluster](#connect-your-cluster)
 - [Deployment methods](#deployment-methods)
 - [Access modes](#access-modes) — [Seamless](#seamless-mode-default) · [Selective](#selective-mode-namespace-scoped-rbac)
+- [Private registry](#private-registry)
+- [Kubernetes environments](#kubernetes-environments) — [GKE](#gke-google-kubernetes-engine) · [AKS](#aks-azure-kubernetes-service)
 - [Disconnecting a cluster](#disconnecting-a-cluster)
 
 ## Connect your cluster
@@ -129,6 +131,108 @@ kubectl rollout status deployment -n jelly
 ### Behavior for unlisted namespaces
 
 Workloads in namespaces that are not whitelisted are silently skipped. They do not appear in the JellyCloud Console, are not considered for scheduling on JellyCloud nodes, and are not affected in any way by the operator.
+
+## Private registry
+
+JellyCloud supports pulling images from private container registries using standard Kubernetes mechanisms. Both pod-level and service account-level `imagePullSecrets` are supported. When pull secrets are attached to a Kubernetes `ServiceAccount`, the Operator reads and forwards them automatically — you do not need to repeat them on every pod spec.
+
+For cloud-managed registries, credential-free alternatives are available using cloud-native identity. GKE clusters can use GCP Workload Identity to grant pull access from Google Artifact Registry, and AKS clusters can use Azure Managed Identity. See the [Kubernetes environments](#kubernetes-environments) section below for setup instructions.
+
+## Kubernetes environments
+
+JellyCloud works out of the box with any standard Kubernetes distribution — no additional configuration is required for most clusters. GKE and AKS have optional setup steps to integrate with their cloud-native identity services, enabling credential-free access to private registries and cloud resources.
+
+### GKE (Google Kubernetes Engine)
+
+When your workloads pull images from Google Artifact Registry (GAR), you can use GCP Workload Identity to grant JellyCloud nodes pull access without storing credentials in the cluster.
+
+JellyCloud nodes authenticate using the `jelly-node` Kubernetes service account in the `jelly` namespace. The steps below bind a GCP service account with Artifact Registry read access to that service account.
+
+:::tip Already have a service account with pull access?
+If you already have a GCP service account with `roles/artifactregistry.reader`, skip to steps 3 and 4.
+:::
+
+1. Create a GCP service account (or use an existing one):
+
+   ```bash
+   gcloud iam service-accounts create <gcp-service-account-name> \
+     --project=<project-name>
+   ```
+
+2. Grant the service account permission to pull from Artifact Registry:
+
+   ```bash
+   gcloud projects add-iam-policy-binding <project-name> \
+     --member="serviceAccount:<gcp-service-account-email>" \
+     --role="roles/artifactregistry.reader"
+   ```
+
+3. Bind the GCP service account to the JellyCloud node Kubernetes service account using Workload Identity:
+
+   ```bash
+   gcloud iam service-accounts add-iam-policy-binding \
+     <gcp-service-account-email> \
+     --project=<project-name> \
+     --role=roles/iam.workloadIdentityUser \
+     --member="serviceAccount:<project-name>.svc.id.goog[jelly/jelly-node]"
+   ```
+
+4. Update the cluster config to register the GCP service account with JellyCloud:
+
+   ```bash
+   kubectl patch clusterconfig.controller.jellycloud.io cluster-config --type merge \
+     --patch '{"spec": {"credentials": {"gcp": {"serviceAccount": "<gcp-service-account-email>"}}}}'
+   ```
+
+After step 4, JellyCloud nodes will use the bound GCP service account to authenticate image pulls from Artifact Registry.
+
+### AKS (Azure Kubernetes Service)
+
+When your AKS cluster uses multiple managed identities, JellyCloud needs to know which identity to use for each workload. This is configured via a label applied at the pod or namespace level.
+
+:::note
+This configuration is only required if your cluster is configured with multiple managed identities. Single-identity clusters work without any additional setup.
+:::
+
+**Step 1: Find the Client ID of the relevant Managed Identity**
+
+Locate the Client ID of the managed identity associated with your AKS node pool or workload identity configuration.
+
+:::warning Do not use `az identity list` output directly
+Running `az identity list -g <resource-group> -o table` returns managed identity resource IDs, not the AKS workload identity Client ID. Use the Client ID shown in the Azure Portal or your AKS identity configuration.
+:::
+
+**Step 2: Apply the Client ID label**
+
+Add the `azure.jellycloud.io/client-id` label to the workload or namespace:
+
+On a Deployment (applies to that workload only):
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-test
+  namespace: data
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loadjob
+  template:
+    metadata:
+      labels:
+        app: loadjob
+        azure.jellycloud.io/client-id: <client-id>
+```
+
+On a Namespace (applies to all Deployments in that namespace):
+
+```bash
+kubectl label namespace <namespace> azure.jellycloud.io/client-id=<client-id>
+```
+
+JellyCloud will use the specified managed identity when scheduling workloads onto AKS nodes.
 
 ## Disconnecting a cluster
 
