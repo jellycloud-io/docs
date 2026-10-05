@@ -6,11 +6,11 @@ sidebar_position: 5
 
 # Persistent Volumes
 
-JellyCloud automates the handling of Persistent Volume Claims (PVCs) defined for workloads and pods deployed on the platform. Volumes follow the pods: they are always provisioned on the same physical location as the pods that use them. JellyCloud follows standard Kubernetes principles, so you continue managing PVCs the same way you always have — using standard `PersistentVolumeClaim` manifests, storage classes, and lifecycle rules. No changes to your existing workflows are required.
+JellyCloud automates the handling of Persistent Volume Claims (PVCs) defined for workloads and pods deployed on the platform. Volumes follow the pods: they are always provisioned on the same physical location as the pods that use them. JellyCloud follows standard Kubernetes principles, so you continue managing PVCs the same way you always have, using standard `PersistentVolumeClaim` manifests, storage classes, and lifecycle rules. No changes to your existing workflows are required.
 
 ## Dynamic PVC
 
-A dynamic PVC is a `PersistentVolumeClaim` that references a `storageClassName`. When the claim is created, Kubernetes hands it to the storage provisioner associated with that class, which automatically creates a matching `PersistentVolume` and binds it to the claim. No pre-provisioned volume needs to exist — the provisioner creates it on demand. If a suitable unbound PV already exists in the cluster, Kubernetes may bind to that instead.
+A dynamic PVC is a `PersistentVolumeClaim` that references a `storageClassName`. When the claim is created, Kubernetes hands it to the storage provisioner associated with that class, which automatically creates a matching `PersistentVolume` and binds it to the claim. No pre-provisioned volume needs to exist: the provisioner creates it on demand. If a suitable unbound PV already exists in the cluster, Kubernetes may bind to that instead.
 
 You can identify a dynamic PVC by the presence of `storageClassName` in the spec:
 
@@ -32,17 +32,27 @@ When a `Deployment` or `StatefulSet` referencing a dynamic PVC is applied, the v
 
 ### JellyCloud internals
 
-Since the volume must reside on the same physical location as the pods, the JellyCloud Operator detects the presence of a dynamic PVC and ensures all pods of the workload are scheduled at the same location — same cloud provider and region.
+A volume must reside in the same location as the pod that uses it: the same cloud provider and zone. The JellyCloud Operator detects workloads with a dynamic PVC and places their pods where a volume for the claim exists or can be created.
 
 :::note
 JellyCloud can run pods with PVCs on supported cloud providers only. See the [Cloud Providers](/cloud-providers) page for the current list.
 :::
 
-Because of this co-location requirement, JellyCloud applies an all-or-nothing rule: either all pods of a deployment with a PVC run on JellyCloud at the same location, or none of them do. Splitting pods across locations or between JellyCloud and non-JellyCloud nodes is not permitted when a PVC is involved.
+Whether all pods that share a claim must stay with one volume, or may get a volume of their own in another zone, is controlled by the [shared storage](/configuration/volumes#shared-pvc-across-pods-and-replicas) setting. Pods that share a claim are not split between JellyCloud and non-JellyCloud nodes.
 
-To implement this, JellyCloud creates a corresponding internal PVC and PV pair in the cluster. These objects are named after the original claim with a `-jc` suffix appended. Their lifecycle is tied to the original objects and managed entirely by the JellyCloud Operator — you do not need to interact with them directly.
+To implement this, JellyCloud creates a corresponding internal PVC and PV pair in the cluster. These objects are named after the original claim with a `-jc` suffix appended. Their lifecycle is tied to the original objects and managed entirely by the JellyCloud Operator. You do not need to interact with them directly.
 
 The original PVC submitted by the user remains in the cluster and continues to represent the user's intent. The `-jc` objects are the binding layer that connects it to the remote volume.
+
+#### Deleting a PVC
+
+JellyCloud adds a finalizer to the original PVC. The finalizer prevents the original PVC from being removed while its `-jc` counterpart still exists. When you delete the original PVC:
+
+1. The `-jc` PVC is deleted automatically through its owner reference.
+2. The `-jc` PV is deleted along with it.
+3. JellyCloud removes the finalizer and the original PVC is deleted.
+
+Because of this sequence, a deleted PVC may briefly show as `Terminating`. This is expected and needs no action.
 
 You can observe both sets of objects with `kubectl`:
 
@@ -57,132 +67,40 @@ NAME                      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CL
 vllm-vllm-models-jc      50Gi       RWO            Delete           Bound    vllm/vllm-models-jc      jelly-storage
 ```
 
-In this example, `vllm-models` is the user-submitted PVC — it remains `Pending` intentionally, as local storage allocation is bypassed with the actual volume provisioned remotely by JellyCloud. `vllm-models-jc` is the JellyCloud-managed object that is `Bound` to the remotely provisioned volume.
+In this example, `vllm-models` is the user-submitted PVC. It remains `Pending` intentionally, as local storage allocation is bypassed with the actual volume provisioned remotely by JellyCloud. `vllm-models-jc` is the JellyCloud-managed object that is `Bound` to the remotely provisioned volume.
 
 ## Static PVC
 
-A static PVC is a `PersistentVolumeClaim` that binds to a specific, pre-provisioned `PersistentVolume` by name. Rather than relying on a provisioner to create a volume on demand, the PV must already exist in the cluster before the claim is applied.
+A static PVC binds to a specific, pre-provisioned `PersistentVolume` instead of having one created on demand. You can identify it by `storageClassName` set to an explicit empty string (`""`). Because a static PVC usually points at data on local infrastructure, JellyCloud does not schedule workloads that use one on JellyCloud nodes by default. To opt a static PVC in, see [Static PVCs](/configuration/volumes#static-pvcs).
 
-You can identify a static PVC by `storageClassName` set to an explicit empty string (`""`). This opts out of dynamic provisioning entirely — Kubernetes will not invoke a provisioner and will only bind to a pre-existing PV. Note that omitting `storageClassName` altogether is different: in that case Kubernetes falls back to the cluster's default storage class and may still trigger dynamic provisioning.
+## Volume types by cloud
 
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: data-volume
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: ""         # explicit empty string disables dynamic provisioning
-  volumeName: my-existing-pv  # optional: bind to a specific pre-created PV by name
-  resources:
-    requests:
-      storage: 20Gi
-```
+When a pod with a dynamic PVC lands on a JellyCloud node, JellyCloud creates a general-purpose block volume in the same cloud and zone as the node, and attaches it to that node.
 
-Because a static PVC references a PV that already exists locally in the cluster, JellyCloud assumes the data resides on local infrastructure. Creating a remote volume in its place would result in data loss, so JellyCloud does not attempt to provision or migrate the volume remotely. Workloads with static PVCs will not be scheduled on JellyCloud nodes.
+| Cloud | Volume created |
+|---|---|
+| AWS | EBS `gp3` |
+| Microsoft Azure | Managed Disk, Premium SSD (`Premium_LRS`) |
+| Google Cloud | Persistent Disk `pd-balanced`, or Hyperdisk Balanced on machine families that require Hyperdisk (for example, C4, N4, and A3) |
+| Oracle Cloud | Block Volume, Balanced performance |
+| Nebius | Network SSD disk |
+| Crusoe | Persistent SSD |
+| DigitalOcean | Block Storage Volume |
+| Civo | Civo Volume |
+| Hetzner | Hetzner Cloud Volume |
 
-:::caution Coming soon
-Support for data replication based on user intent — enabling static PVC workloads to run on JellyCloud nodes — is planned and will be documented here when available.
-:::
+Volumes are zonal: a volume can be attached only to a node in the same zone. Very small requests may be rounded up to the cloud provider's minimum volume size.
 
-## PVC Passthrough (self-hosted nodes)
+## Access modes and attachment
 
-PVC passthrough lets workloads running on self-hosted nodes use storage that is physically attached to the machine — for example, a locally mounted disk or NFS share you have already set up. JellyCloud ensures that the volume defined in the workload is mounted to the storage on the self-hosted node.
+**Single attachment (`ReadWriteOnce`):** block volumes on every supported cloud attach to one node at a time. Pods that share the same claim are placed with the node where the volume lives, or get a volume of their own, depending on the [shared storage](/configuration/volumes#shared-pvc-across-pods-and-replicas) setting.
 
-### How it works
-
-The passthrough annotation goes on the **pod template** of your `Deployment` or `StatefulSet`. The annotation value is a JSON object that maps each volume name (as declared in `spec.template.spec.volumes`) to the physical path where that storage is mounted on the self-hosted machine.
-
-```yaml
-volume.jellycloud.io/passthrough: '{"<volume-name>": {"path": "<host-path>"}}'
-```
-
-### Single volume example
-
-In this example, the volume `data-volume` is mounted at `/mnt/data` on the self-hosted node:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: data-processor
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: data-processor
-  template:
-    metadata:
-      labels:
-        app: data-processor
-      annotations:
-        volume.jellycloud.io/passthrough: '{"data-volume": {"path": "/mnt/data"}}'
-    spec:
-      containers:
-        - name: processor
-          image: my-image:latest
-          volumeMounts:
-            - name: data-volume
-              mountPath: /data
-      volumes:
-        - name: data-volume
-          hostPath:
-            path: /mnt/data
-```
-
-### Multiple volumes example
-
-List all passthrough volumes in the same JSON object, one entry per volume:
-
-```yaml
-annotations:
-  volume.jellycloud.io/passthrough: |
-    {
-      "model-weights": {"path": "/mnt/models"},
-      "scratch-disk":  {"path": "/mnt/scratch"}
-    }
-```
-
-The corresponding `volumes` section must declare each named volume:
-
-```yaml
-volumes:
-  - name: model-weights
-    hostPath:
-      path: /mnt/models
-  - name: scratch-disk
-    hostPath:
-      path: /mnt/scratch
-```
-
-### Storage must be present on every eligible node
-
-The physical path specified in the annotation must be mounted and accessible on **every self-hosted node that the workload could be scheduled to**. JellyCloud does not provision or verify the storage — it only passes the reference through. If the path is absent on the target node, the node agent rejects the pod and the failure propagates back to the cluster as a scheduling error.
-
-To avoid this, either ensure the path exists on all candidate nodes, or use node selectors or affinity rules to pin the workload to the specific nodes where the storage is present.
-
-## Shared PVC across pods and replicas
-
-When multiple pods or replicas reference the same PVC, JellyCloud ensures they all run on the same cloud provider and region as the node where the PVC was first created. Because a PVC can only be bound to a single physical location, all pods that share it must be co-located — JellyCloud enforces this automatically for the initial pod and applies the same placement constraint to every subsequent replica or pod that references the same claim.
-
-By default, JellyCloud uses a **preferred** placement strategy: if a JellyCloud node is available in the required location, the workload is placed there; otherwise it can fall back to non-JellyCloud nodes. If you need to guarantee that all pods run exclusively on JellyCloud nodes and never fall back, add the following annotation to your pod template:
-
-```yaml
-annotations:
-  volume.jellycloud.io/shared-storage: required
-```
-
-With `required`, if JellyCloud cannot place a pod on a JellyCloud node in the correct location, the pod remains unscheduled rather than falling back to a different environment. This prevents any replica from silently running outside the location where the PVC is bound.
-
-## Block device volumes
-
-Kubernetes supports block devices as local volumes (`volumeMode: Block`). JellyCloud now passes these through to the node agent without rejection. No additional configuration is needed — use standard Kubernetes block volume definitions and JellyCloud will handle them alongside file-based volumes.
+**Multiple attachment (`ReadWriteMany`, `ReadOnlyMany`):** a claim that many nodes mount at once needs a shared file system rather than a block volume. JellyCloud supports this where the cloud provides a shared file system storage option, currently Nebius Shared File Systems. See [Shared file systems](/configuration/volumes#shared-file-systems-readwritemany).
 
 ## Object Storage
 
 Object storage is accessed via SDK rather than mounted as a filesystem. The AWS S3 SDK is the most common example, but the same pattern applies to other providers such as GCS or Azure Blob Storage.
 
-Unlike block or file volumes, object storage remains in its original location. Pods running on remote JellyCloud nodes access it directly over the network, the same way they would from any other environment. JellyCloud handles the underlying connectivity between the remote nodes and the object storage endpoint, and preserves the original identity and access management configuration. No changes are required to your application code, SDK calls, or IAM policies — the experience is seamless from the workload's perspective.
+Unlike block or file volumes, object storage remains in its original location. Pods running on remote JellyCloud nodes access it directly over the network, the same way they would from any other environment. JellyCloud handles the underlying connectivity between the remote nodes and the object storage endpoint, and preserves the original identity and access management configuration. No changes are required to your application code, SDK calls, or IAM policies. The experience is seamless from the workload's perspective.
 
 This applies to private object storage as well. The storage endpoint does not need to be publicly accessible. JellyCloud routes traffic through its secure transport layer, so private buckets and endpoints work without any changes to their access or network configuration.
