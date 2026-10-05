@@ -78,6 +78,20 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        // Old URLs kept working after the Configuration restructure (2026-10)
+        redirects: [
+          {from: '/deployment-options', to: '/configuration'},
+          {from: '/deployment-options/cluster-deployment', to: '/configuration/cluster-setup'},
+          {from: '/policies', to: '/configuration/workload-policies'},
+        ],
+      },
+    ],
+  ],
+
   themeConfig: {
     image: 'img/jellycloud-social-card.jpg',
     colorMode: {
@@ -134,7 +148,7 @@ const config: Config = {
             {label: 'Supported Platforms', to: '/supported-platforms'},
             {label: 'Cloud Providers', to: '/cloud-providers/'},
             {label: 'AI Serving', to: '/ai-serving'},
-            {label: 'Policies', to: '/policies'},
+            {label: 'Workload Policies', to: '/configuration/workload-policies'},
           ],
         },
         {

@@ -14,6 +14,11 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'doc',
+      id: 'whats-new',
+      label: "What's New",
+    },
+    {
+      type: 'doc',
       id: 'supported-platforms/index',
       label: 'Supported Platforms',
     },
@@ -29,6 +34,9 @@ const sidebars: SidebarsConfig = {
         'cloud-providers/hetzner',
         'cloud-providers/azure',
         'cloud-providers/digitalocean',
+        'cloud-providers/aws',
+        'cloud-providers/oracle',
+        'cloud-providers/nebius',
       ],
     },
     {
@@ -45,11 +53,13 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Deployment Options',
-      link: {type: 'doc', id: 'deployment-options/index'},
+      label: 'Configuration',
+      link: {type: 'doc', id: 'configuration/index'},
       items: [
-        'deployment-options/cluster-deployment',
-        'policies/index',
+        'configuration/cluster-setup',
+        'configuration/nodes-and-node-pools',
+        'configuration/volumes',
+        'configuration/workload-policies',
       ],
     },
     {

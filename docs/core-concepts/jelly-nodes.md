@@ -26,8 +26,15 @@ This aggregation model gives you significant flexibility when working with remot
 
 ## Node selectors
 
-Each Jelly Virtual Node is labeled with the architecture and instance type it represents. You can use these standard labels alongside JellyCloud's proprietary `jellycloud.io` labels to write simple and flexible node selector rules that target exactly the cloud, location or even an instance your workload needs. See the [Policies](/policies) page for the full list of available labels and examples.
+Each Jelly Virtual Node is labeled with the architecture and instance type it represents. You can use these standard labels alongside JellyCloud's proprietary `jellycloud.io` labels to write simple and flexible node selector rules that target exactly the cloud, location or even an instance your workload needs. See the [Workload Policies](/configuration/workload-policies) page for the full list of available labels and examples.
+
+Labels defined on a `Deployment` are also propagated to the pods JellyCloud runs on remote nodes, so the pods carry the same labels you see in the cluster.
 
 ## Viewing remote nodes
 
-While Jelly Virtual Nodes are what Kubernetes sees, you can inspect the actual remote instances behind them in the Console. Navigate to the <ConsoleLink path="/nodes">Nodes</ConsoleLink> page to see detailed information about all connected remote nodes, including their locations, hardware specifications, status. You can also perform actions on those nodes
+While Jelly Virtual Nodes are what Kubernetes sees, you can inspect the actual remote instances behind them in the Console. Navigate to the <ConsoleLink path="/nodes">Nodes</ConsoleLink> page to see detailed information about all connected remote nodes, including their locations, hardware specifications, and status. You can also perform actions on those nodes.
+
+For nodes provisioned by a Node Pool, the node details panel also shows the **VM Type** (the provider's instance type) and the capacity type: **Spot** or **On Demand**.
+
+GPU nodes and GPU Node Pools display a GPU chip. Hover over it, or focus it with the keyboard, to see the GPU model, the number of GPUs per node, VRAM per GPU, and total VRAM per node. VRAM shows as `N/A` when the exact GPU variant cannot be determined.
+

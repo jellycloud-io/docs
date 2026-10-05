@@ -60,9 +60,17 @@ Do not start this phase until the user explicitly approves.
 
 3. Apply each approved change to the relevant docs files. Follow all writing conventions in `CLAUDE.md` exactly (no em/en dashes, colon after bold terms in lists, "to" not "–" for ranges, mandatory `## Connect your account {#credentials}` structure on provider pages, etc.).
 
-4. After all changes are made, update the memory file at `/Users/arthurav/.claude/projects/-Users-arthurav-DevProjects-docs/memory/project_last_jira_sync.md`:
+4. Update `docs/whats-new.md` with a release entry for this sync:
+   - Add a `## <Month YYYY>` section at the top (newest first), labeled with the month the changes shipped. Ask the user if the month is unclear.
+   - Never skip a month. If a month between the previous entry and this one had no user-facing changes, still add its section with a single line saying so.
+   - Use `### New` and `### Improved` subsections. Each item is one line, topic level only, in the form `- **Topic:** one sentence. See [Page](/link).` Describe product changes, not documentation edits, and link to the relevant doc section.
+   - If the month's section already exists, add to it instead of creating a duplicate.
+
+5. Highlight every changed section in red for review and do not commit. Follow the review-before-commit memory: wrap changed blocks in `<div className="review-changed">`, rebuild, and wait for the user to confirm the review is done before removing the highlights and committing.
+
+6. After all changes are made, update the memory file at `/Users/arthurav/.claude/projects/-Users-arthurav-DevProjects-docs/memory/project_last_jira_sync.md`:
    - Set `last_sync_date` to today's date
    - Set `last_sprint` to the highest sprint number seen in this batch (or the current sprint name)
    - Add a one-line note summarising what was updated
 
-5. Confirm to the user which files were changed and that the branch is ready to push or review.
+7. Confirm to the user which files were changed and that the branch is ready for review.

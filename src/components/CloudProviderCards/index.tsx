@@ -82,6 +82,36 @@ const providers: CloudProvider[] = [
     href: './digitalocean',
     badges: ['General Compute', 'Cost Effective'],
   },
+  {
+    id: 'aws',
+    displayName: 'AWS',
+    description:
+      'Market-leading cloud platform offering the most comprehensive set of cloud services with global infrastructure and enterprise-grade solutions.',
+    logo: 'https://a0.awsstatic.com/libra-css/images/site/touch-icon-ipad-144-smile.png',
+    color: '#ff9900',
+    href: './aws',
+    badges: ['General Compute', 'GPU Specialized', 'High Performance'],
+  },
+  {
+    id: 'oracle',
+    displayName: 'Oracle Cloud',
+    description:
+      'Enterprise cloud platform optimized for Oracle workloads with strong database services and competitive pricing for compute resources.',
+    logo: 'https://www.oracle.com/favicon.ico',
+    color: '#f80000',
+    href: './oracle',
+    badges: ['General Compute', 'GPU Specialized', 'Cost Effective'],
+  },
+  {
+    id: 'nebius',
+    displayName: 'Nebius',
+    description:
+      'AI-native GPU cloud offering NVIDIA H100, H200, and L40S GPUs with InfiniBand interconnect, from single-node instances to thousand-GPU clusters.',
+    logo: 'https://nebius.com/favicon.ico',
+    color: '#00d1b2',
+    href: './nebius',
+    badges: ['GPU Specialized', 'High Performance'],
+  },
 ];
 
 export default function CloudProviderCards(): JSX.Element {
