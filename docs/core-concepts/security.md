@@ -24,7 +24,7 @@ JellyCloud supports a selective access model where you explicitly declare which 
 
 This model is particularly useful for multi-tenant clusters, production environments.
 
-For configuration instructions, see [Cluster Deployment](/deployment-options/cluster-deployment#selective-rbac).
+For configuration instructions, see [Cluster Setup](/configuration/cluster-setup#selective-rbac).
 
 ## Node-to-node connectivity (S2S)
 

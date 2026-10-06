@@ -47,6 +47,8 @@ The `Contributor` role gives JellyCloud permission to create, manage, and delete
 
 In the Console, navigate to the **Providers** page, select **Microsoft Azure**, and click **Connect**. Enter your **Subscription ID** and **Tenant ID**, then click **Apply**. JellyCloud will validate the credentials before storing them in a secured secret manager.
 
+After connecting, you can add more subscriptions from the provider's settings in the Console. Each Node Pool selects the subscription it provisions into. A subscription cannot be removed while a Node Pool uses it. The Service Principal must have the `Contributor` role (or your custom role) on every subscription you add.
+
 :::tip Finding your Tenant ID
 Run `az account show --query tenantId -o tsv` to retrieve your Tenant ID.
 :::
@@ -58,6 +60,12 @@ The following resource providers must be registered on your subscription. They a
 - `Microsoft.Network`
 - `Microsoft.Resources`
 :::
+
+## Node Pools on Azure
+
+**GPU drivers:** GPU Node Pools on Azure use NVIDIA drivers provided by Azure. When you create a GPU Node Pool, you only choose the Linux distribution. JellyCloud prepares a GPU-ready image from it automatically, so you do not need to pick an image with drivers pre-installed.
+
+**Template VM:** to prepare that image, JellyCloud runs a temporary template VM in your subscription and stores the result in an Azure Compute Gallery. You may see this VM in the Azure Portal. It is not shown in the JellyCloud Console, does not count toward your Node Pool capacity, and is cleaned up automatically. The gallery permissions are listed under [Custom images](#custom-role-minimum-required-permissions) below.
 
 ## Custom role: minimum required permissions
 
@@ -106,3 +114,17 @@ Every VM gets its own NIC, VNet, subnet, and NSG provisioned by JellyCloud.
 | `Microsoft.Resources/subscriptions/resourceGroups/write` | Creating the per-region `jellycloud-{location}` resource group |
 | `Microsoft.Resources/subscriptions/resourceGroups/read` | Targeting the resource group on all subsequent calls |
 
+
+**Custom images** (`Microsoft.Compute/galleries`, only required when using custom images from an Azure Compute Gallery)
+
+| Permission | Used by |
+|---|---|
+| `Microsoft.Compute/galleries/write`, `/images/write` | Creating the gallery and image definitions |
+| `Microsoft.Compute/galleries/images/versions/write` | Publishing image versions to the gallery |
+| `Microsoft.Compute/galleries/images/versions/read` | Launching VMs from a gallery image |
+
+If you prefer built-in roles over a custom role, use the following:
+
+- **Create the gallery and image definitions:** `Compute Gallery Contributor` (or `Contributor`) on the resource group.
+- **Publish images:** `Compute Gallery Contributor` on the gallery, plus `Reader` on the source VM or snapshot.
+- **Launch VMs from an image:** `Compute Gallery Reader` (or `Reader`) on the gallery or image definition.

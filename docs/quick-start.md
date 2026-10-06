@@ -38,22 +38,20 @@ To run your workloads, you need to connect instances. Use the **Add** button in 
 
 Self-install is the right option when you have existing compute that you want to bring into JellyCloud. This includes on-premises servers, existing cloud VMs, or any cloud provider not yet natively supported by JellyCloud.
 
-To get the installation link, click **Add** in the top-right corner and select **Add Node**. Copy the generated link and run it on the target machine. JellyCloud will install the required agent and register the instance automatically.
+1. Check the [Supported Platforms](/supported-platforms) page to confirm your OS is supported and your instance meets the minimum hardware requirements.
+2. In the Console, click **Add** in the top-right corner and select **Add Node**. Copy the installation command. It includes your tenant's API key and looks like this:
 
-If you plan to use the link as a VM startup script or a cloud-init script, prepend `#!/bin/bash` before the link so the shell interprets it correctly:
+   ```bash
+   curl -sSLf 'https://api.prod.jellycloud.io/agent/install.sh' | sudo env JELLY_API_KEY=<API-Key> sh
+   ```
 
-```bash
-#!/bin/bash
-<paste the installation link here>
-```
+3. Run the command on the target machine with elevated privileges (as `root` or via `sudo`). JellyCloud installs the agent and registers the instance automatically. You can reuse the same command for as many instances as you need.
 
-:::warning Keep your installation link private
-The link contains a token unique to your tenant. Do not share it publicly or commit it to version control.
+:::warning Keep your installation command private
+The command contains an API key unique to your tenant. Do not share it publicly or commit it to version control.
 :::
 
-You can reuse the same link to register as many instances as you need. Make sure the installation script runs with elevated privileges (e.g. as `root` or via `sudo`), as it needs to install system-level components.
-
-Before running the script, check the [Supported Platforms](/supported-platforms) page to confirm your OS is supported and your instance meets the minimum hardware requirements.
+To run the command as a VM startup script, or to override the detected provider information, see [Self-hosted nodes](/configuration/nodes-and-node-pools#self-hosted-nodes).
 
 ### Node Pools (Autoscaler)
 
@@ -62,26 +60,18 @@ Node Pools let JellyCloud automatically provision and scale compute on your beha
 To create a Node Pool:
 
 1. Click **Add** in the top-right corner and select **Add NodePool**.
-2. Give it a name (e.g. `h100-eu-sovereign`). The name must be unique across your node pools and can be used as a node selector in workload manifests.
+2. Give it a name (e.g. `h100-eu-sovereign`). The name must be unique across your node pools.
 3. Select the cloud provider you want to provision into. If the provider is not yet connected, you will be prompted to provide connection details at this step. See the [Cloud Providers](/cloud-providers) section for provider-specific instructions.
-4. Select the region(s): choose one or more regions and availability zones within the cloud. Order them by priority. When multiple regions or zones are selected, JellyCloud provisions new instances in that order, starting with the first region and moving to the next only when the previous one cannot fulfill the request.
-5. Choose the workload type: **GPU** for GPU-accelerated workloads, or **General Compute** for CPU-based workloads.
-6. Select the machine configuration:
+4. Select the subscription (Azure), compartment (Oracle), or project (GCP and other providers) to provision into.
+5. Select one or more regions and zones, in priority order.
+6. Choose the workload type: **GPU** for GPU-accelerated workloads, or **General Compute** for CPU-based workloads.
+7. Select the machine configuration:
    - **General Compute:** choose a machine family, then select the specific machine size.
    - **GPU:** choose the GPU model, then select the instance with the number of GPU slots you need.
-7. Select the capacity type:
-   - **On-Demand:** stable, always-available capacity. Instances are not reclaimed by the provider.
-   - **Spot:** significantly lower cost, with the trade-off that instances can be reclaimed by the cloud provider. JellyCloud handles revocation automatically: when a spot instance is about to be terminated, JellyCloud drains the node and reschedules affected pods before the instance is lost.
-   - **Spot First:** JellyCloud hunts for spot availability across all selected regions. If no spot capacity is found in any region, it falls back to On-Demand automatically. This gives you the cost savings of spot when available, without sacrificing availability.
-8. Select the OS image. A default is pre-selected based on your workload type: Ubuntu 24.04 and up for General Compute nodes, and an Ubuntu image with CUDA drivers for GPU nodes. You can change this from the list of images supported by your chosen cloud provider.
+8. Select the capacity type: **On-Demand**, **Spot**, or **Spot First**.
 
-   :::tip GPU startup time
-   For GPU-accelerated nodes, choose an OS image that includes GPU drivers. Pre-installed drivers eliminate driver setup on first boot and reduce node startup time.
-   :::
-   
-   :::tip Enable or disable a NodePool
-   After creation, you can enable or disable a NodePool from its card menu in the Console. Disabling a NodePool stops autoscaling for that pool. Existing nodes continue running but no new nodes will be provisioned until the pool is re-enabled.
-   :::
+For capacity types, Advanced Settings (OS image, OS disk, labels, and taints), and managing pools, see [Node Pools](/configuration/nodes-and-node-pools#node-pools).
+
 
 ## 3. Connect a Cluster
 
@@ -102,6 +92,8 @@ You can connect any number of Kubernetes clusters to JellyCloud. All of them sha
 
 2. Copy the Helm command from the Console and run it on your cluster. The command installs the JellyCloud Operator into the `jelly` namespace and authenticates it using the embedded token. No extra configuration is needed.
 
+   This sets up the cluster in seamless mode, where JellyCloud can schedule workloads in every namespace. To restrict JellyCloud to specific namespaces or change cluster-wide defaults, see [Cluster Setup](/configuration/cluster-setup).
+
 3. The Operator takes a couple of minutes to initialize. Watch the rollout:
 
    ```bash
@@ -114,7 +106,7 @@ You can connect any number of Kubernetes clusters to JellyCloud. All of them sha
    kubectl get nodes
    ```
 
-   You'll see virtual nodes added by JellyCloud alongside your existing ones. Each node represents a group of instances sharing the same architecture. Run `kubectl describe node <node-name>` to inspect a node — allocatable capacity reflects the actual resources of the instances you connected.
+   You'll see virtual nodes added by JellyCloud alongside your existing ones. Each node represents a group of instances sharing the same architecture. Run `kubectl describe node <node-name>` to inspect a node. Allocatable capacity reflects the actual resources of the instances you connected.
 
 4. Your cluster is now ready. Run any standard Kubernetes `Deployment` or `StatefulSet` and JellyCloud will schedule it across the nodes and cloud providers of your choice. No changes to your manifests are required.
 
@@ -134,7 +126,9 @@ You can connect any number of Kubernetes clusters to JellyCloud. All of them sha
 
 - **[Core Concepts](/core-concepts):** Understand workloads, networking, and storage primitives
 - **[Supported Platforms](/supported-platforms):** See which cloud providers and runtimes are supported
-- **[Policies](/policies):** Fine-tune workload placement and node selection rules
+- **[Cluster Setup](/configuration/cluster-setup):** Namespace-scoped access, cluster-wide defaults, and private registries
+- **[Nodes and Node Pools](/configuration/nodes-and-node-pools):** Startup scripts, provider overrides, and advanced Node Pool settings
+- **[Workload Policies](/configuration/workload-policies):** Fine-tune workload placement and node selection rules
 - **[AI Serving](/ai-serving):** Deploy LLMs and ML models with GPU-aware scheduling
 - **[jelly-bites](https://github.com/jellycloud-io/jelly-bites):** Ready-to-run sample applications
 - **[Support](/support):** Contact the JellyCloud team

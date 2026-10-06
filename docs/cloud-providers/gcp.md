@@ -10,15 +10,36 @@ sidebar_position: 1
 
 Connect your GCP account to JellyCloud using a service account JSON key file.
 
-JellyCloud requires permissions to manage compute instances, images, networking, and storage on your behalf. Grant the following five predefined GCP roles to the service account:
+JellyCloud requires permissions to manage compute instances, firewall rules, and storage on your behalf. Grant the following three predefined GCP roles to the service account:
 
 | Role | Role ID | Purpose |
 |---|---|---|
-| Compute Image User | `roles/compute.imageUser` | Read and use image resources |
-| Compute Instance Admin (v1) | `roles/compute.instanceAdmin.v1` | Create and manage VM instances, disks, and snapshots |
-| Compute Network User | `roles/compute.networkUser` | Use Compute Engine networking resources |
-| Compute Storage Admin | `roles/compute.storageAdmin` | Manage disks and storage resources |
-| Compute Viewer | `roles/compute.viewer` | Read-only access to Compute Engine resources |
+| Compute Instance Admin (v1) | `roles/compute.instanceAdmin.v1` | Create and manage VM instances, disks, images, and network attachments |
+| Compute Security Admin | `roles/compute.securityAdmin` | Create firewall rules when the default rules block the required port |
+| Storage Admin | `roles/storage.admin` | Create and manage the model cache bucket |
+
+### Prerequisites
+
+1. **Enable the Compute Engine API** (`compute.googleapis.com`) on the project. If you use the model cache feature, also enable the Cloud Storage API (`storage.googleapis.com`).
+
+   ```bash
+   gcloud services enable compute.googleapis.com --project=<project-id>
+   ```
+
+2. **Allow service account key creation.** Many organizations enforce the `iam.managed.disableServiceAccountKeyCreation` organization policy, which blocks JSON key creation. If it is enforced, override it for the project JellyCloud will use. In the GCP Console, go to **IAM & Admin → Organization policies**, open **Disable service account key creation**, click **Manage policy**, select **Override parent's policy**, and set enforcement to **Off**. Or with the gcloud CLI:
+
+   ```bash
+   cat > policy.yaml <<'EOF'
+   name: projects/<project-id>/policies/iam.managed.disableServiceAccountKeyCreation
+   spec:
+     rules:
+       - enforce: false
+   EOF
+
+   gcloud org-policies set-policy policy.yaml
+   ```
+
+   Changing an organization policy requires the **Organization Policy Administrator** role (`roles/orgpolicy.policyAdmin`). Older organizations may enforce the legacy `iam.disableServiceAccountKeyCreation` constraint instead. Override it the same way.
 
 ### Option A: Google Cloud Console
 
@@ -27,12 +48,10 @@ JellyCloud requires permissions to manage compute instances, images, networking,
 3. Click **Create Service Account**.
 4. **Name:** e.g. `jellycloud-platform`
 5. Click **Create and Continue**.
-6. In **Grant this service account access to the project**, add all five roles:
-   - `Compute Image User` (`roles/compute.imageUser`)
+6. In **Grant this service account access to the project**, add all three roles:
    - `Compute Instance Admin (v1)` (`roles/compute.instanceAdmin.v1`)
-   - `Compute Network User` (`roles/compute.networkUser`)
-   - `Compute Storage Admin` (`roles/compute.storageAdmin`)
-   - `Compute Viewer` (`roles/compute.viewer`)
+   - `Compute Security Admin` (`roles/compute.securityAdmin`)
+   - `Storage Admin` (`roles/storage.admin`)
 7. Click **Continue**, then **Done**.
 8. Click the service account you just created and go to the **Keys** tab.
 9. Click **Add Key → Create new key → JSON → Create**.
@@ -53,25 +72,11 @@ gcloud iam service-accounts create "${SA_NAME}" \
   --display-name="JellyCloud Platform"
 
 # Grant required roles
-gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
-  --member="serviceAccount:${SA_EMAIL}" \
-  --role="roles/compute.imageUser"
-
-gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
-  --member="serviceAccount:${SA_EMAIL}" \
-  --role="roles/compute.instanceAdmin.v1"
-
-gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
-  --member="serviceAccount:${SA_EMAIL}" \
-  --role="roles/compute.networkUser"
-
-gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
-  --member="serviceAccount:${SA_EMAIL}" \
-  --role="roles/compute.storageAdmin"
-
-gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
-  --member="serviceAccount:${SA_EMAIL}" \
-  --role="roles/compute.viewer"
+for ROLE in roles/compute.instanceAdmin.v1 roles/compute.securityAdmin roles/storage.admin; do
+  gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+    --member="serviceAccount:${SA_EMAIL}" \
+    --role="${ROLE}"
+done
 
 # Generate and download the JSON key
 gcloud iam service-accounts keys create credentials.json \
@@ -81,18 +86,14 @@ gcloud iam service-accounts keys create credentials.json \
 The file `credentials.json` is now ready to upload to JellyCloud.
 
 :::note Firewall rules
-JellyCloud tests connectivity after credentials are saved. Firewall rules are only configured if the default GCP rules block the required port — in most projects no changes are needed.
+JellyCloud tests connectivity after credentials are saved. Firewall rules are only configured if the default GCP rules block the required port. In most projects no changes are needed.
 :::
 
 ### Add to JellyCloud
 
 In the Console, navigate to the **Providers** page, select **Google Cloud**, and click **Apply**. Upload the JSON key file and click **Continue**. JellyCloud will validate the credentials before storing them in a secured secret manager.
 
-:::note Required APIs
-Enable the following APIs on your GCP project:
-- `compute.googleapis.com` — always required
-- `storage.googleapis.com` — required only if using the model-cache bucket feature
-:::
+After connecting, you can add more projects from the provider's settings in the Console. Each Node Pool selects the project it provisions into. A project cannot be removed while a Node Pool uses it. The service account must have the roles above, and the prerequisites must be in place, in every project you add.
 
 ## Custom role: minimum required permissions
 
